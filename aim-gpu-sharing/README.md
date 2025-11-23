@@ -116,7 +116,7 @@ See [HARDWARE_TEST_STATUS.md](./HARDWARE_TEST_STATUS.md) for detailed hardware t
 - **Multi-partition scenarios**: Some tests are skipped when only 1 partition is available
 - **Multi-model concurrent tests**: Work correctly but may skip tests requiring 2+ partitions
 
-For thorough CPX mode testing (4 partitions), physical hardware or cloud providers that support CPX mode are required. The code supports CPX mode and will work correctly when hardware supports it.
+For thorough CPX mode testing (8 partitions for MI300X), physical hardware or cloud providers that support CPX mode are required. The code supports CPX mode and will work correctly when hardware supports it.
 
 ## Quick Start
 
