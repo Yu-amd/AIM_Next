@@ -1,0 +1,535 @@
+models:
+  CohereForAI/aya-expanse-8B:
+    model_id: CohereForAI/aya-expanse-8B
+    parameters: 8B
+    precision_memory:
+      fp16: 20.0
+      int8: 13.0
+      int4: 9.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 25.0
+    memory_gb: 20.0
+  CohereForAI/aya-expanse-32B:
+    model_id: CohereForAI/aya-expanse-32B
+    parameters: 32B
+    memory_gb: 75.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 80.0
+    precision_memory:
+      fp16: 75.0
+      int8: 45.0
+      int4: 30.0
+  deepseek-ai/DeepSeek-R1-0528:
+    model_id: deepseek-ai/DeepSeek-R1-0528
+    parameters: 8B
+    memory_gb: 20.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 25.0
+    precision_memory:
+      fp16: 20.0
+      int8: 13.0
+      int4: 9.0
+  deepseek-ai/Distill-Llama-8B:
+    model_id: deepseek-ai/Distill-Llama-8B
+    parameters: 8B
+    memory_gb: 20.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 25.0
+    precision_memory:
+      fp16: 20.0
+      int8: 13.0
+      int4: 9.0
+  deepseek-ai/DeepSeek-R1-Distill-Llama-70B:
+    model_id: deepseek-ai/DeepSeek-R1-Distill-Llama-70B
+    parameters: 70B
+    memory_gb: 165.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 180.0
+    precision_memory:
+      fp16: 165.0
+      int8: 90.0
+      int4: 60.0
+  deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B:
+    model_id: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+    parameters: 1.5B
+    memory_gb: 6.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 8.0
+    precision_memory:
+      fp16: 6.0
+      int8: 4.0
+      int4: 3.0
+  deepseek-ai/DeepSeek-R1-Distill-Qwen-7B:
+    model_id: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+    parameters: 7B
+    memory_gb: 19.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 24.0
+    precision_memory:
+      fp16: 19.0
+      int8: 12.0
+      int4: 8.0
+  deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:
+    model_id: deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+    parameters: 14B
+    memory_gb: 37.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 45.0
+    precision_memory:
+      fp16: 37.0
+      int8: 22.0
+      int4: 15.0
+  deepseek-ai/DeepSeek-R1-Distill-Qwen-32B:
+    model_id: deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+    parameters: 32B
+    memory_gb: 84.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 90.0
+    precision_memory:
+      fp16: 84.0
+      int8: 49.0
+      int4: 32.0
+  deepseek-ai/DeepSeek-R1-Zero:
+    model_id: deepseek-ai/DeepSeek-R1-Zero
+    parameters: 70B
+    memory_gb: 165.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 180.0
+    precision_memory:
+      fp16: 165.0
+      int8: 90.0
+      int4: 60.0
+  deepseek-ai/DeepSeek-V3:
+    model_id: deepseek-ai/DeepSeek-V3
+    parameters: 37B
+    memory_gb: 105.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 110.0
+    precision_memory:
+      fp16: 105.0
+      int8: 60.0
+      int4: 35.0
+  deepseek-ai/DeepSeek-V3-0324:
+    model_id: deepseek-ai/DeepSeek-V3-0324
+    parameters: 37B
+    memory_gb: 105.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 110.0
+    precision_memory:
+      fp16: 105.0
+      int8: 60.0
+      int4: 35.0
+  google/gemma-3-1B:
+    model_id: google/gemma-3-1B
+    parameters: 1B
+    memory_gb: 6.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 8.0
+    precision_memory:
+      fp16: 6.0
+      int8: 4.0
+      int4: 2.0
+  google/gemma-3-4B:
+    model_id: google/gemma-3-4B
+    parameters: 4B
+    memory_gb: 12.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 15.0
+    precision_memory:
+      fp16: 12.0
+      int8: 8.0
+      int4: 5.0
+  google/gemma-3-12B:
+    model_id: google/gemma-3-12B
+    parameters: 12B
+    memory_gb: 28.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 35.0
+    precision_memory:
+      fp16: 28.0
+      int8: 18.0
+      int4: 12.0
+  google/gemma-3-27B:
+    model_id: google/gemma-3-27B
+    parameters: 27B
+    memory_gb: 60.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 70.0
+    precision_memory:
+      fp16: 60.0
+      int8: 35.0
+      int4: 25.0
+  meta-llama/Llama-3.1-8B-Instruct:
+    model_id: meta-llama/Llama-3.1-8B-Instruct
+    parameters: 8B
+    memory_gb: 20.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 25.0
+    precision_memory:
+      fp16: 20.0
+      int8: 13.0
+      int4: 9.0
+  meta-llama/Llama-3.2-1B-Instruct:
+    model_id: meta-llama/Llama-3.2-1B-Instruct
+    parameters: 1B
+    memory_gb: 5.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 7.0
+    precision_memory:
+      fp16: 5.0
+      int8: 3.0
+      int4: 2.0
+  meta-llama/Llama-3.2-3B-Instruct:
+    model_id: meta-llama/Llama-3.2-3B-Instruct
+    parameters: 3B
+    memory_gb: 10.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 13.0
+    precision_memory:
+      fp16: 10.0
+      int8: 6.0
+      int4: 4.0
+  meta-llama/Llama-3.2-11B-Instruct:
+    model_id: meta-llama/Llama-3.2-11B-Instruct
+    parameters: 11B
+    memory_gb: 26.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 32.0
+    precision_memory:
+      fp16: 26.0
+      int8: 16.0
+      int4: 10.0
+  meta-llama/Llama-3.3-70B-Instruct:
+    model_id: meta-llama/Llama-3.3-70B-Instruct
+    parameters: 70B
+    memory_gb: 165.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 180.0
+    precision_memory:
+      fp16: 165.0
+      int8: 90.0
+      int4: 60.0
+  meta-llama/Llama-4-Scout-17B:
+    model_id: meta-llama/Llama-4-Scout-17B
+    parameters: 17B
+    memory_gb: 52.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 60.0
+    precision_memory:
+      fp16: 52.0
+      int8: 32.0
+      int4: 21.0
+  mistralai/Mistral-Small-3.1-24B:
+    model_id: mistralai/Mistral-Small-3.1-24B
+    parameters: 24B
+    memory_gb: 68.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 75.0
+    precision_memory:
+      fp16: 68.0
+      int8: 40.0
+      int4: 28.0
+  mistralai/Mistral-Large:
+    model_id: mistralai/Mistral-Large
+    parameters: 70B
+    memory_gb: 165.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 180.0
+    precision_memory:
+      fp16: 165.0
+      int8: 90.0
+      int4: 60.0
+  mistralai/Mixtral-8x7B-Instruct-v0.1:
+    model_id: mistralai/Mixtral-8x7B-Instruct-v0.1
+    parameters: 45B
+    memory_gb: 90.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 100.0
+    precision_memory:
+      fp16: 90.0
+      int8: 50.0
+      int4: 32.0
+  OdiaGenAI-LLM/qwen_1.5_odia_7b:
+    model_id: OdiaGenAI-LLM/qwen_1.5_odia_7b
+    parameters: 7B
+    memory_gb: 20.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 25.0
+    precision_memory:
+      fp16: 20.0
+      int8: 13.0
+      int4: 9.0
+  Qwen/Qwen2.5-0.5B-Instruct:
+    model_id: Qwen/Qwen2.5-0.5B-Instruct
+    parameters: 0.5B
+    memory_gb: 3.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 4.0
+    precision_memory:
+      fp16: 3.0
+      int8: 2.0
+      int4: 1.0
+  Qwen/Qwen2.5-1.5B-Instruct:
+    model_id: Qwen/Qwen2.5-1.5B-Instruct
+    parameters: 1.5B
+    memory_gb: 5.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 7.0
+    precision_memory:
+      fp16: 5.0
+      int8: 3.0
+      int4: 2.0
+  Qwen/Qwen2.5-3B-Instruct:
+    model_id: Qwen/Qwen2.5-3B-Instruct
+    parameters: 3B
+    memory_gb: 10.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 13.0
+    precision_memory:
+      fp16: 10.0
+      int8: 7.0
+      int4: 4.0
+  Qwen/Qwen3-4B-Instruct:
+    model_id: Qwen/Qwen3-4B-Instruct
+    parameters: 4B
+    memory_gb: 10.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 13.0
+    precision_memory:
+      fp16: 10.0
+      int8: 7.0
+      int4: 5.0
+  Qwen/Qwen3-8B-Instruct:
+    model_id: Qwen/Qwen3-8B-Instruct
+    parameters: 8B
+    memory_gb: 22.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 28.0
+    precision_memory:
+      fp16: 22.0
+      int8: 13.0
+      int4: 9.0
+  Qwen/Qwen3-14B-Instruct:
+    model_id: Qwen/Qwen3-14B-Instruct
+    parameters: 14B
+    memory_gb: 38.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 45.0
+    precision_memory:
+      fp16: 38.0
+      int8: 23.0
+      int4: 15.0
+  Qwen/Qwen3-30B-Instruct:
+    model_id: Qwen/Qwen3-30B-Instruct
+    parameters: 30B
+    memory_gb: 80.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 90.0
+    precision_memory:
+      fp16: 80.0
+      int8: 46.0
+      int4: 30.0
+  Qwen/Qwen3-32B-Instruct:
+    model_id: Qwen/Qwen3-32B-Instruct
+    parameters: 32B
+    memory_gb: 85.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 95.0
+    precision_memory:
+      fp16: 85.0
+      int8: 50.0
+      int4: 33.0
+  Qwen/Qwen3-235B-A22B:
+    model_id: Qwen/Qwen3-235B-A22B
+    parameters: 235B
+    memory_gb: 128.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 135.0
+    precision_memory:
+      fp16: 128.0
+      int8: 104.0
+      int4: 92.0
+  TinyLlama/TinyLlama-1.1B-Chat-v1.0:
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    parameters: 1.1B
+    memory_gb: 6.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 8.0
+    precision_memory:
+      fp16: 6.0
+      int8: 4.0
+      int4: 3.0
+  unsloth/Llama-3.2-11B-Vision:
+    model_id: unsloth/Llama-3.2-11B-Vision
+    parameters: 11B
+    memory_gb: 31.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 38.0
+    precision_memory:
+      fp16: 31.0
+      int8: 19.0
+      int4: 13.0
+  unsloth/Llama-3.2-30B-Vision:
+    model_id: unsloth/Llama-3.2-30B-Vision
+    parameters: 30B
+    memory_gb: 80.0
+    quantization:
+    - fp16
+    - int8
+    - int4
+    recommended_partition_gb: 90.0
+    precision_memory:
+      fp16: 80.0
+      int8: 48.0
+      int4: 31.0
+gpu_specs:
+  MI300X:
+    total_memory_gb: 192
+    compute_units: 304
+    recommended_partitions:
+    - 2
+    - 4
+    - 8
+  MI325X:
+    total_memory_gb: 192
+    compute_units: 304
+    recommended_partitions:
+    - 2
+    - 4
+    - 8
+  MI350X:
+    total_memory_gb: 192
+    compute_units: 304
+    recommended_partitions:
+    - 2
+    - 4
+    - 8
+  MI355X:
+    total_memory_gb: 192
+    compute_units: 304
+    recommended_partitions:
+    - 2
+    - 4
+    - 8
+  MI350P:
+    total_memory_gb: 128
+    compute_units: 256
+    recommended_partitions:
+    - 2
+    - 4
+partition_config:
+  system_overhead_gb: 4
+  min_partition_gb: 8
+  max_partitions: 8
+  allocation_strategy: auto

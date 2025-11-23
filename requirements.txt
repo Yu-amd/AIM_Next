@@ -1,0 +1,30 @@
+# Core dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+pyyaml>=6.0
+
+# Kubernetes
+kubernetes>=28.0.0
+kubeflow-kserve>=0.11.0
+
+# Machine Learning
+torch>=2.1.0
+transformers>=4.35.0
+peft>=0.7.0
+accelerate>=0.25.0
+
+# Monitoring
+prometheus-client>=0.19.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-k8s>=0.1.0
+
+# Utilities
+requests>=2.31.0
+aiohttp>=3.9.0
+python-dotenv>=1.0.0
+
+

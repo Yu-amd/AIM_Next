@@ -1,0 +1,26 @@
+{
+  "model_id": "meta-llama/Llama-4-Scout-17B",
+  "variant_id": "meta-llama/Llama-4-Scout-17B-int4",
+  "version": "1.0.0-int4",
+  "parameters": "17B",
+  "precision": "int4",
+  "memory_requirement_gb": 21.0,
+  "recommended_partition_gb": 26.25,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 26.25,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 21.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int4",
+    "base_model": "meta-llama/Llama-4-Scout-17B",
+    "parameters": "17B"
+  }
+}

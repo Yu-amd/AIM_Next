@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+
+# Docker
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Checkpoints and models (large files)
+*.ckpt
+*.safetensors
+*.bin
+models/
+checkpoints/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+
+

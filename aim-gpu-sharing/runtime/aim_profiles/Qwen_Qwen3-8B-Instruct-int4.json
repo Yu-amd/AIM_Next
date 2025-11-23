@@ -1,0 +1,26 @@
+{
+  "model_id": "Qwen/Qwen3-8B-Instruct",
+  "variant_id": "Qwen/Qwen3-8B-Instruct-int4",
+  "version": "1.0.0-int4",
+  "parameters": "8B",
+  "precision": "int4",
+  "memory_requirement_gb": 9.0,
+  "recommended_partition_gb": 11.25,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 11.25,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 9.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int4",
+    "base_model": "Qwen/Qwen3-8B-Instruct",
+    "parameters": "8B"
+  }
+}

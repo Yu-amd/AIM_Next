@@ -1,0 +1,26 @@
+{
+  "model_id": "mistralai/Mistral-Small-3.1-24B",
+  "variant_id": "mistralai/Mistral-Small-3.1-24B-fp16",
+  "version": "1.0.0-fp16",
+  "parameters": "24B",
+  "precision": "fp16",
+  "memory_requirement_gb": 68.0,
+  "recommended_partition_gb": 85.0,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 85.0,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 68.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "fp16",
+    "base_model": "mistralai/Mistral-Small-3.1-24B",
+    "parameters": "24B"
+  }
+}

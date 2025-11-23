@@ -1,0 +1,26 @@
+{
+  "model_id": "unsloth/Llama-3.2-30B-Vision",
+  "variant_id": "unsloth/Llama-3.2-30B-Vision-int4",
+  "version": "1.0.0-int4",
+  "parameters": "30B",
+  "precision": "int4",
+  "memory_requirement_gb": 31.0,
+  "recommended_partition_gb": 38.75,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 38.75,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 31.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int4",
+    "base_model": "unsloth/Llama-3.2-30B-Vision",
+    "parameters": "30B"
+  }
+}

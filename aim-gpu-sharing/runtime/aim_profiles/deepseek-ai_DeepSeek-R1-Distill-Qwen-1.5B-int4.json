@@ -1,0 +1,26 @@
+{
+  "model_id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+  "variant_id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B-int4",
+  "version": "1.0.0-int4",
+  "parameters": "1.5B",
+  "precision": "int4",
+  "memory_requirement_gb": 3.0,
+  "recommended_partition_gb": 3.75,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 3.75,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 3.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int4",
+    "base_model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    "parameters": "1.5B"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "model_id": "OdiaGenAI-LLM/qwen_1.5_odia_7b",
+  "variant_id": "OdiaGenAI-LLM/qwen_1.5_odia_7b-int8",
+  "version": "1.0.0-int8",
+  "parameters": "7B",
+  "precision": "int8",
+  "memory_requirement_gb": 13.0,
+  "recommended_partition_gb": 16.25,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 16.25,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 13.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int8",
+    "base_model": "OdiaGenAI-LLM/qwen_1.5_odia_7b",
+    "parameters": "7B"
+  }
+}

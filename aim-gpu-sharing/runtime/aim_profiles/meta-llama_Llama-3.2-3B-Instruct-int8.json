@@ -1,0 +1,26 @@
+{
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "variant_id": "meta-llama/Llama-3.2-3B-Instruct-int8",
+  "version": "1.0.0-int8",
+  "parameters": "3B",
+  "precision": "int8",
+  "memory_requirement_gb": 6.0,
+  "recommended_partition_gb": 7.5,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 7.5,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 6.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int8",
+    "base_model": "meta-llama/Llama-3.2-3B-Instruct",
+    "parameters": "3B"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "model_id": "deepseek-ai/DeepSeek-V3-0324",
+  "variant_id": "deepseek-ai/DeepSeek-V3-0324-int4",
+  "version": "1.0.0-int4",
+  "parameters": "37B",
+  "precision": "int4",
+  "memory_requirement_gb": 35.0,
+  "recommended_partition_gb": 43.75,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 43.75,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 35.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int4",
+    "base_model": "deepseek-ai/DeepSeek-V3-0324",
+    "parameters": "37B"
+  }
+}

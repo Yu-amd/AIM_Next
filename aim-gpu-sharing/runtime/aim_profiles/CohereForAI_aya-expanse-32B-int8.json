@@ -1,0 +1,26 @@
+{
+  "model_id": "CohereForAI/aya-expanse-32B",
+  "variant_id": "CohereForAI/aya-expanse-32B-int8",
+  "version": "1.0.0-int8",
+  "parameters": "32B",
+  "precision": "int8",
+  "memory_requirement_gb": 45.0,
+  "recommended_partition_gb": 56.25,
+  "gpu_sharing": {
+    "enabled": true,
+    "memory_limit_gb": 56.25,
+    "partition_id": null,
+    "qos_priority": "medium"
+  },
+  "resource_requirements": {
+    "gpu_memory_gb": 45.0,
+    "gpu_count": 1,
+    "cpu_cores": 2,
+    "system_memory_gb": 16
+  },
+  "metadata": {
+    "quantization": "int8",
+    "base_model": "CohereForAI/aya-expanse-32B",
+    "parameters": "32B"
+  }
+}

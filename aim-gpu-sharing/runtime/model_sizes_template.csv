@@ -1,0 +1,19 @@
+# Model Sizing Data Template
+# Fill in this CSV with data from the PDF tables, then run: python3 csv_to_yaml.py
+# Columns:
+#   model_id: Full HuggingFace model identifier (e.g., "cohere/Command-R")
+#   parameters: Parameter count (e.g., "7B", "13B", "70B")
+#   memory_gb: Minimum GPU memory required in GB
+#   quantization: Supported quantization levels (comma-separated, e.g., "fp16,int8,int4")
+#   recommended_partition_gb: Recommended partition size in GB (optional, will be calculated if empty)
+#
+# Example entries (replace with actual data from PDF):
+model_id,parameters,memory_gb,quantization,recommended_partition_gb
+# cohere/Command-R,7B,16.0,fp16,int8,int4,20.0
+# deepseek-ai/DeepSeek-V2,7B,14.0,fp16,int8,int4,17.5
+# google/gemma-2b,2B,5.0,fp16,int8,int4,6.5
+# meta-llama/Llama-3.1-8B-Instruct,8B,16.0,fp16,int8,int4,20.0
+# mistralai/Mistral-7B-Instruct,7B,14.0,fp16,int8,int4,17.5
+# Qwen/Qwen-7B-Chat,7B,14.0,fp16,int8,int4,17.5
+# TinyLlama/TinyLlama-1.1B-Chat-v1.0,1.1B,3.0,fp16,int8,int4,4.0
+
