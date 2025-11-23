@@ -106,6 +106,16 @@ aim-gpu-sharing/
 
 See [HARDWARE_TEST_STATUS.md](./HARDWARE_TEST_STATUS.md) for detailed hardware test results.
 
+### Hardware Testing Notes
+
+**⚠️ Important:** Digital Ocean MI300X instances do not advertise CPX (Compute Partition eXtended) mode support. As a result:
+- **SPX mode testing**: Fully tested and validated (1 partition, 192GB)
+- **CPX mode testing**: Limited testing due to hardware limitations
+- **Multi-partition scenarios**: Some tests are skipped when only 1 partition is available
+- **Multi-model concurrent tests**: Work correctly but may skip tests requiring 2+ partitions
+
+For thorough CPX mode testing (4 partitions), physical hardware or cloud providers that support CPX mode are required. The code supports CPX mode and will work correctly when hardware supports it.
+
 ## Quick Start
 
 ### Prerequisites
@@ -168,6 +178,7 @@ python3 tests/run_all_tests.py
    - Partition mode detection (SPX/CPX, NPS1/NPS4)
    - GPU detection and specifications
    - **Verifies tests are running on real hardware, not simulation**
+   - **Note**: CPX mode testing is limited on Digital Ocean MI300X instances
 
 3. **Integration Tests** - Component integration (no cluster required)
    - QoS Manager functionality

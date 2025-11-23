@@ -21,6 +21,7 @@ TEST_MODULES = [
     ('test_kserve_e2e.py', 'KServe End-to-End Tests'),
     ('test_hardware_verification.py', 'Hardware Verification Tests'),
     ('test_rocm_partitioner.py', 'ROCm Partitioner Tests (Hardware)'),
+    ('test_multi_model_concurrent.py', 'Multi-Model Concurrent Tests'),
 ]
 
 def run_test_module(test_file, description):

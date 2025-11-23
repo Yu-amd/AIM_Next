@@ -125,6 +125,19 @@ For hardware tests to pass:
 - **amd-smi** command available
 - **Sufficient permissions** to access GPU
 
+### Platform-Specific Notes
+
+**Digital Ocean MI300X Instances:**
+- ✅ SPX mode fully supported and tested (1 partition, 192GB)
+- ⚠️ CPX mode not advertised/available
+- ⚠️ Multi-partition tests may be skipped
+- ✅ All single-partition functionality fully tested
+
+**Physical Hardware / Other Cloud Providers:**
+- Should support both SPX and CPX modes
+- CPX mode provides 4 partitions for better multi-model testing
+- Full test suite can run without skipping
+
 ## Integration with Other Tests
 
 The hardware partitioner is used by:
