@@ -2,9 +2,20 @@
 Tests for QoS Manager
 """
 
+import sys
 import pytest
 import time
-from runtime.qos import QoSManager, QoSLevel, Request, SLO
+from pathlib import Path
+
+# Add runtime to path
+runtime_path = Path(__file__).parent.parent / "runtime"
+sys.path.insert(0, str(runtime_path))
+
+# Add qos subdirectory
+qos_path = runtime_path / "qos"
+sys.path.insert(0, str(qos_path))
+
+from qos.qos_manager import QoSManager, QoSLevel, Request, SLO
 
 
 class TestQoSManager:

@@ -16,24 +16,86 @@ This document provides comprehensive instructions for running and writing tests 
 
 ### Prerequisites
 
-Install test dependencies:
+#### 1. Kubernetes Cluster with AMD GPU Operator
+
+Before running integration and end-to-end tests, you need a Kubernetes cluster with AMD GPU operator installed.
+
+**Recommended Setup:** Use the [Kubernetes-MI300X repository](https://github.com/Yu-amd/Kubernetes-MI300X) for automated setup:
+
+```bash
+# Clone the setup repository
+git clone https://github.com/Yu-amd/Kubernetes-MI300X.git
+cd Kubernetes-MI300X
+
+# Step 1: Install Kubernetes
+sudo ./install-kubernetes.sh
+
+# Step 2: Install AMD GPU Operator
+./install-amd-gpu-operator.sh
+
+# Verify installation
+kubectl get pods -n kube-amd-gpu
+```
+
+**Alternative:** If you already have a Kubernetes cluster, install the AMD GPU operator manually following the [official documentation](https://github.com/RadeonOpenCompute/k8s-device-plugin).
+
+#### 2. Python Dependencies
+
+**Automatic Installation (Recommended):**
+
+Test prerequisites are automatically installed when running tests. The test runner will check and install missing packages.
+
+**Manual Installation:**
 
 ```bash
 # From project root
 pip install -r requirements.txt
 
 # Or just testing dependencies
-pip install pytest pytest-asyncio
+pip install pytest pytest-asyncio prometheus-client pyyaml kubernetes
+
+# Or use the prerequisites script
+cd aim-gpu-sharing/tests
+./install_prerequisites.sh
+```
+
+#### 3. kubectl Configuration
+
+Ensure `kubectl` is configured to access your cluster:
+
+```bash
+kubectl cluster-info
+kubectl get nodes
 ```
 
 ### Run All Tests
 
+#### Basic Tests (No Cluster Required)
 ```bash
 # Quick validation (no pytest required)
 cd aim-gpu-sharing
 python3 tests/run_tests.py
 
-# Full test suite with pytest
+# Integration tests (no KServe required)
+python3 tests/run_all_tests.py
+```
+
+#### Full Test Suite (With KServe)
+```bash
+# Option 1: Use convenience script (recommended)
+cd aim-gpu-sharing
+./tests/run_tests_with_kserve.sh --install-kserve
+
+# Option 2: Manual installation
+cd aim-gpu-sharing/tests
+./install_kserve.sh install
+cd ..
+python3 tests/run_all_tests.py
+```
+
+#### Full Test Suite with pytest
+```bash
+# Requires pytest installation
 pytest tests/ -v
 ```
 
@@ -43,17 +105,27 @@ pytest tests/ -v
 aim-gpu-sharing/
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py              # Shared fixtures
-│   ├── test_model_sizing.py     # Model sizing tests
-│   ├── test_rocm_partitioner.py # Partitioner tests
-│   ├── test_model_scheduler.py # Scheduler tests
-│   ├── test_resource_isolator.py # Isolator tests
+│   ├── conftest.py                  # Shared fixtures
+│   ├── test_model_sizing.py         # Model sizing tests
+│   ├── test_rocm_partitioner.py     # Partitioner tests
+│   ├── test_model_scheduler.py      # Scheduler tests
+│   ├── test_resource_isolator.py    # Isolator tests
 │   ├── test_aim_profile_generator.py # Profile generator tests
-│   ├── run_tests.py             # Quick test runner
-│   ├── README.md                # Test documentation
-│   └── TEST_SUMMARY.md          # Coverage summary
-├── pytest.ini                   # Pytest configuration
-└── runtime/                     # Source code being tested
+│   ├── test_qos_manager.py          # QoS Manager unit tests
+│   ├── test_integration.py          # Integration tests (QoS + KServe)
+│   ├── test_metrics_exporter.py      # Metrics exporter tests
+│   ├── test_kserve_integration.py    # KServe integration tests
+│   ├── test_kserve_e2e.py            # KServe end-to-end tests
+│   ├── run_tests.py                  # Quick test runner
+│   ├── run_all_tests.py              # Comprehensive test runner
+│   ├── run_tests_with_kserve.sh     # Convenience script with KServe
+│   ├── install_kserve.sh            # KServe installation script
+│   ├── README.md                     # Test infrastructure docs
+│   ├── INSTALLATION_GUIDE.md         # KServe installation guide
+│   ├── TEST_INFRASTRUCTURE.md        # Infrastructure documentation
+│   └── TEST_SUMMARY.md               # Coverage summary
+├── pytest.ini                        # Pytest configuration
+└── runtime/                          # Source code being tested
 ```
 
 ## Running Tests
@@ -118,6 +190,89 @@ python3 tests/run_tests.py
 ```
 
 This runs basic functionality tests and doesn't require pytest installation.
+
+## New Test Scripts
+
+### Prerequisites Installation Script (`tests/install_prerequisites.sh`)
+
+Automated script to install Python dependencies required for tests:
+
+```bash
+cd tests
+./install_prerequisites.sh
+```
+
+**Installs:**
+- pytest and pytest-asyncio
+- prometheus-client
+- pyyaml
+- kubernetes client (for E2E tests)
+
+**Note:** The test runner (`run_all_tests.py`) automatically installs prerequisites if missing, so manual installation is optional.
+
+### KServe Installation Script (`tests/install_kserve.sh`)
+
+Automated script to install KServe in your Kubernetes cluster:
+
+```bash
+cd tests
+./install_kserve.sh install    # Install KServe
+./install_kserve.sh verify     # Verify installation
+./install_kserve.sh uninstall  # Remove KServe
+```
+
+**Features:**
+- Automatically installs cert-manager (if needed)
+- Configurable via environment variables
+- Verifies installation
+- Handles errors gracefully
+- Handles missing RBAC manifest files gracefully
+
+See [tests/INSTALLATION_GUIDE.md](./tests/INSTALLATION_GUIDE.md) for detailed instructions.
+
+### Comprehensive Test Runner (`tests/run_all_tests.py`)
+
+Unified test runner that executes all test suites:
+
+```bash
+python3 tests/run_all_tests.py
+```
+
+**Features:**
+- Automatically detects KServe installation
+- Skips E2E tests if KServe not available
+- Generates comprehensive reports
+- Provides detailed failure information
+
+### Convenience Script (`tests/run_tests_with_kserve.sh`)
+
+Interactive script that optionally installs KServe before running tests:
+
+```bash
+./tests/run_tests_with_kserve.sh --install-kserve  # Force installation
+./tests/run_tests_with_kserve.sh                   # Interactive prompt
+./tests/run_tests_with_kserve.sh --skip-kserve     # Skip installation
+```
+
+### End-to-End Tests (`tests/test_kserve_e2e.py`)
+
+Tests that require KServe to be installed:
+
+```bash
+# Ensure KServe is installed first
+cd tests && ./install_kserve.sh install
+
+# Run E2E tests
+python3 tests/test_kserve_e2e.py
+```
+
+**Tests:**
+- KServe installation verification
+- InferenceService creation
+- GPU sharing annotations
+- CRD extension validation
+
+For more details, see [tests/README.md](./tests/README.md).
 
 ## Writing Tests
 
@@ -225,12 +380,19 @@ def test_precision_memory(self, precision, expected_memory):
 ### Current Coverage
 
 - ✅ Model sizing configuration (15 tests)
-- ✅ ROCm partitioner (12 tests)
+- ✅ ROCm partitioner (13 tests) - **Uses real hardware when available**
+- ✅ Hardware verification (6 tests) - **Validates real hardware functionality**
 - ✅ Model scheduler (13 tests)
 - ✅ Resource isolator (11 tests)
 - ✅ AIM profile generator (10 tests)
+- ✅ QoS Manager (10 tests)
+- ✅ KServe integration (7 tests)
+- ✅ Metrics exporter (4 tests)
+- ✅ KServe E2E (4 tests)
 
-**Total: 61 unit tests**
+**Total: 93+ tests (61 unit + 32 integration/E2E)**
+
+**Note:** The ROCm partitioner tests automatically detect and use real hardware (via `amd-smi`) when available, falling back to simulation mode only if hardware is not detected. The hardware verification tests explicitly verify that real hardware is being used. See [tests/HARDWARE_TESTING.md](./tests/HARDWARE_TESTING.md) for details.
 
 ### Coverage Goals
 

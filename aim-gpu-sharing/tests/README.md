@@ -1,114 +1,249 @@
-# Test Suite for AIM GPU Sharing
+# Test Infrastructure
 
-This directory contains unit tests for the GPU sharing and partitioning components.
+This directory contains comprehensive test suites for KServe integration and QoS monitoring.
 
-**📖 For comprehensive testing documentation, see [../TESTING.md](../TESTING.md)**
+## Prerequisites
 
-## Quick Reference
+Before running tests, ensure you have:
+
+1. **Kubernetes Cluster with AMD GPU Operator**
+   - A running Kubernetes cluster (v1.20+) with AMD GPU operator installed
+   - For setup instructions, see: [Kubernetes-MI300X Repository](https://github.com/Yu-amd/Kubernetes-MI300X)
+   - Quick setup:
+     ```bash
+     # Clone the setup repository
+     git clone https://github.com/Yu-amd/Kubernetes-MI300X.git
+     cd Kubernetes-MI300X
+     
+     # Install Kubernetes
+     sudo ./install-kubernetes.sh
+     
+     # Install AMD GPU Operator
+     ./install-amd-gpu-operator.sh
+     
+     # Verify installation
+     kubectl get pods -n kube-amd-gpu
+     ```
+
+2. **Python Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **kubectl** configured to access your cluster
+   ```bash
+   kubectl cluster-info
+   ```
+
+## Test Suites
+
+### 1. Integration Tests (`test_integration.py`)
+Tests QoS Manager and KServe integration components without requiring KServe to be installed.
+
+**Run:**
+```bash
+python3 tests/test_integration.py
+```
+
+### 2. Metrics Exporter Tests (`test_metrics_exporter.py`)
+Validates Prometheus metrics exporter structure and endpoints.
+
+**Run:**
+```bash
+python3 tests/test_metrics_exporter.py
+```
+
+### 3. KServe Integration Tests (`test_kserve_integration.py`)
+Tests KServe CRD schema, controller logic, and manifest structure.
+
+**Run:**
+```bash
+python3 tests/test_kserve_integration.py
+```
+
+### 4. KServe End-to-End Tests (`test_kserve_e2e.py`)
+**Requires KServe to be installed.** Tests actual InferenceService creation and GPU sharing integration.
+
+**Run:**
+```bash
+python3 tests/test_kserve_e2e.py
+```
+
+### 5. QoS Manager Unit Tests (`test_qos_manager.py`)
+Pytest-based unit tests for QoS Manager (requires pytest).
+
+**Run:**
+```bash
+pytest tests/test_qos_manager.py -v
+```
+
+## Running All Tests
+
+### Automatic Prerequisites Installation
+
+The test runner automatically installs prerequisites if missing:
+- pytest and pytest-asyncio
+- prometheus-client
+- pyyaml
+- kubernetes client (for E2E tests)
+
+You can also install prerequisites manually:
+```bash
+cd tests
+./install_prerequisites.sh
+```
+
+### Quick Test (No KServe Required)
+```bash
+# From aim-gpu-sharing directory
+python3 tests/run_all_tests.py
+```
+
+The test runner will:
+1. Check and install prerequisites automatically
+2. Detect KServe installation
+3. Run all applicable tests
+4. Generate comprehensive report
+
+### Full Test Suite (With KServe)
+
+**Option 1: Use Convenience Script (Recommended)**
+```bash
+# From aim-gpu-sharing directory
+./tests/run_tests_with_kserve.sh --install-kserve
+```
+
+**Option 2: Manual Installation**
+```bash
+# Install KServe first
+cd tests
+./install_kserve.sh install
+
+# Run all tests
+cd ..
+python3 tests/run_all_tests.py
+```
+
+**Option 3: Interactive Prompt**
+```bash
+# From aim-gpu-sharing directory
+./tests/run_tests_with_kserve.sh
+# Will prompt to install KServe if not detected
+```
+
+## KServe Installation
 
 ### Prerequisites
+- Kubernetes cluster (v1.20+)
+- kubectl configured to access the cluster
+- Sufficient cluster resources
 
-Install test dependencies:
-
-```bash
-pip install pytest pytest-asyncio
-```
-
-Or install all dependencies from the main requirements.txt:
+### Installation
 
 ```bash
-pip install -r ../../requirements.txt
+cd tests
+./install_kserve.sh install
 ```
 
-### Run All Tests
+### Verification
 
 ```bash
-# From project root
-cd aim-gpu-sharing
-pytest
-
-# Or with verbose output
-pytest -v
-
-# Or run specific test file
-pytest tests/test_model_sizing.py -v
+./install_kserve.sh verify
 ```
 
-### Run Specific Test Categories
+### Uninstallation
 
 ```bash
-# Run only unit tests
-pytest -m unit
-
-# Run only integration tests (when available)
-pytest -m integration
-
-# Run specific test class
-pytest tests/test_model_sizing.py::TestModelSizingConfig -v
-
-# Run specific test
-pytest tests/test_model_sizing.py::TestModelSizingConfig::test_load_config -v
+./install_kserve.sh uninstall
 ```
 
-## Test Structure
+### Configuration
 
-### Unit Tests
+You can customize the installation by setting environment variables:
 
-- `test_model_sizing.py` - Tests for model sizing configuration and utilities
-- `test_rocm_partitioner.py` - Tests for ROCm memory partitioner
-- `test_model_scheduler.py` - Tests for model scheduler
-- `test_resource_isolator.py` - Tests for resource isolator
-- `test_aim_profile_generator.py` - Tests for AIM profile generation
-
-### Integration Tests
-
-Integration tests (requiring actual GPU hardware) should be placed in `tests/integration/`.
-
-## Test Coverage
-
-Current test coverage includes:
-
-- ✅ Model sizing configuration loading and validation
-- ✅ Model size estimation with different precision levels
-- ✅ GPU specification retrieval
-- ✅ Partition validation
-- ✅ ROCm partitioner initialization and model allocation
-- ✅ Model scheduler operations
-- ✅ Resource isolator configuration
-- ✅ AIM profile generation
-
-## Writing New Tests
-
-When adding new functionality, add corresponding tests:
-
-1. Create test file: `test_<module_name>.py`
-2. Import the module: `from <module> import <Class>`
-3. Create test class: `class Test<Class>:`
-4. Add test methods: `def test_<functionality>(self):`
-5. Use fixtures from `conftest.py` when appropriate
-
-### Example Test
-
-```python
-import pytest
-from model_sizing import ModelSizingConfig
-
-class TestNewFeature:
-    def test_basic_functionality(self):
-        config = ModelSizingConfig()
-        result = config.new_method()
-        assert result is not None
+```bash
+export KSERVE_VERSION=v0.12.0
+export KSERVE_NAMESPACE=kserve
+export CERT_MANAGER_VERSION=v1.13.0
+./install_kserve.sh install
 ```
+
+## Test Infrastructure Components
+
+### Installation Script (`install_kserve.sh`)
+- Installs cert-manager (if not present)
+- Installs KServe
+- Verifies installation
+- Handles errors gracefully
+
+### Test Runner (`run_all_tests.py`)
+- Runs all test suites
+- Generates comprehensive reports
+- Skips E2E tests if KServe is not installed
+- Provides detailed failure information
+
+## Test Results
+
+Test results are displayed in the console. For detailed reports, see `TEST_REPORT.md` in the parent directory.
+
+## Troubleshooting
+
+### KServe Installation Fails
+
+1. Check cluster connectivity:
+   ```bash
+   kubectl cluster-info
+   ```
+
+2. Check cluster resources:
+   ```bash
+   kubectl top nodes
+   ```
+
+3. Check cert-manager:
+   ```bash
+   kubectl get pods -n cert-manager
+   ```
+
+### Tests Fail
+
+1. **QoS Manager tests fail:**
+   - These are unit tests and should work without any cluster setup
+   - Check Python dependencies
+
+2. **KServe E2E tests fail:**
+   - Ensure KServe is installed: `./install_kserve.sh verify`
+   - Check KServe controller: `kubectl get pods -n kserve`
+
+3. **Import errors:**
+   - Ensure you're running from the correct directory
+   - Check that runtime modules are accessible
 
 ## Continuous Integration
 
-Tests should be run in CI/CD pipeline:
+For CI/CD pipelines, you can use:
 
-```yaml
-# Example GitHub Actions
-- name: Run tests
-  run: |
-    pip install -r requirements.txt
-    pytest tests/ -v
+```bash
+# Install KServe
+cd tests && ./install_kserve.sh install
+
+# Run tests
+cd .. && python3 tests/run_all_tests.py
+
+# Exit code will be non-zero if tests fail
 ```
 
+## Adding New Tests
+
+1. Create test file: `test_<feature>.py`
+2. Follow existing test patterns
+3. Add to `TEST_MODULES` in `run_all_tests.py`
+4. Update this README
+
+## Test Coverage
+
+- ✅ QoS Manager (priority queues, SLO tracking, resource management)
+- ✅ Metrics Exporter (Prometheus integration, endpoints)
+- ✅ KServe CRD Schema (OpenAPI validation)
+- ✅ Partition Controller (logic and methods)
+- ✅ KServe E2E (InferenceService creation, GPU sharing)
