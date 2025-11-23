@@ -1,0 +1,78 @@
+{
+  "dashboard": {
+    "title": "AIM GPU Sharing - Scheduler Metrics",
+    "tags": ["aim", "gpu-sharing", "scheduler"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Scheduler Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(aim_scheduler_operations_total[5m])",
+            "legendFormat": "{{operation}} - {{status}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ops",
+            "label": "Operations/sec"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Queue Depth",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_scheduler_queue_depth",
+            "legendFormat": "Priority {{priority}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Queue Depth"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Total Scheduler Operations",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(aim_scheduler_operations_total)",
+            "legendFormat": "Total Operations"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Operation Success Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(aim_scheduler_operations_total{status=\"success\"}[5m]) / rate(aim_scheduler_operations_total[5m])",
+            "legendFormat": "{{operation}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percentunit",
+            "label": "Success Rate",
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}
+

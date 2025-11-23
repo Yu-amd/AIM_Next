@@ -1,0 +1,94 @@
+{
+  "dashboard": {
+    "title": "AIM GPU Sharing - Partition Utilization",
+    "tags": ["aim", "gpu-sharing", "partitions"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Partition Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_gpu_partition_memory_allocated_bytes",
+            "legendFormat": "Partition {{partition_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Partition Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_gpu_partition_utilization",
+            "legendFormat": "Partition {{partition_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percentunit",
+            "label": "Utilization",
+            "max": 1
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Available Memory per Partition",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_gpu_partition_memory_available_bytes",
+            "legendFormat": "Partition {{partition_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Available Memory"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Total GPU Memory",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "aim_gpu_total_memory_bytes",
+            "legendFormat": "Total Memory"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Partition Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "aim_gpu_partition_count",
+            "legendFormat": "Partitions"
+          }
+        ]
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}
+

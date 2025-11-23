@@ -1,0 +1,98 @@
+{
+  "dashboard": {
+    "title": "AIM GPU Sharing - Model Performance",
+    "tags": ["aim", "gpu-sharing", "models"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Latency by Model",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, aim_model_request_latency_seconds_bucket)",
+            "legendFormat": "p95 - {{model_id}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, aim_model_request_latency_seconds_bucket)",
+            "legendFormat": "p50 - {{model_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "s",
+            "label": "Latency"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Request Rate by Model",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(aim_model_requests_total[5m])",
+            "legendFormat": "{{model_id}} - {{status}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Total Requests by Model",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_model_requests_total",
+            "legendFormat": "{{model_id}} - {{status}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Total Requests"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Model Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "aim_model_memory_bytes",
+            "legendFormat": "{{model_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Success vs Failed Requests",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum(aim_model_requests_total) by (status)",
+            "legendFormat": "{{status}}"
+          }
+        ]
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}
+

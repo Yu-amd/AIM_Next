@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aim-gpu-sharing-operator
+  namespace: aim-system
+  labels:
+    app: aim-gpu-sharing-operator
+    component: operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aim-gpu-sharing-operator
+  template:
+    metadata:
+      labels:
+        app: aim-gpu-sharing-operator
+    spec:
+      serviceAccountName: aim-gpu-sharing-operator
+      containers:
+      - name: controller
+        image: aim-gpu-sharing-controller:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GPU_ID
+          value: "0"
+        - name: NAMESPACE
+          value: ""  # Empty for all namespaces
+        - name: LOG_LEVEL
+          value: "INFO"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: rocm-dev
+          mountPath: /dev/dri
+        - name: rocm-sys
+          mountPath: /sys/class/kfd
+      volumes:
+      - name: rocm-dev
+        hostPath:
+          path: /dev/dri
+      - name: rocm-sys
+        hostPath:
+          path: /sys/class/kfd
+      nodeSelector:
+        accelerator: amd-gpu
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+

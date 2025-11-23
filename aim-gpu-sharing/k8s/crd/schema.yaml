@@ -1,0 +1,112 @@
+# OpenAPI Schema for GPU Sharing CRD
+# This schema defines the structure for GPU sharing annotations in KServe InferenceService
+
+openapi: 3.0.0
+info:
+  title: AIM GPU Sharing API
+  version: v1alpha1
+  description: GPU sharing configuration for KServe InferenceService
+
+paths:
+  /apis/aim.amd.com/v1alpha1/namespaces/{namespace}/inferenceservices:
+    get:
+      summary: List InferenceServices
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of InferenceServices
+
+components:
+  schemas:
+    GPUSharingConfig:
+      type: object
+      description: GPU sharing configuration
+      properties:
+        enabled:
+          type: boolean
+          description: Enable GPU sharing
+          default: false
+        partitionId:
+          type: integer
+          description: Specific partition ID (null for auto-assignment)
+          nullable: true
+        computeMode:
+          type: string
+          enum: [SPX, CPX]
+          default: SPX
+          description: Compute partition mode
+        memoryMode:
+          type: string
+          enum: [NPS1, NPS4]
+          default: NPS1
+          description: Memory partition mode
+        memoryLimitGB:
+          type: number
+          minimum: 0
+          description: Memory limit in GB
+        preferredPartition:
+          type: integer
+          nullable: true
+          description: Preferred partition ID
+        qosPriority:
+          type: string
+          enum: [low, medium, high]
+          default: medium
+          description: QoS priority level
+      required:
+        - enabled
+
+    PartitionInfo:
+      type: object
+      description: Partition assignment information
+      properties:
+        partitionId:
+          type: integer
+          description: Assigned partition ID
+        computeMode:
+          type: string
+          description: Active compute mode
+        memoryMode:
+          type: string
+          description: Active memory mode
+        partitionSizeGB:
+          type: number
+          description: Partition size in GB
+        allocatedMemoryGB:
+          type: number
+          description: Allocated memory in GB
+        availableMemoryGB:
+          type: number
+          description: Available memory in GB
+
+    InferenceService:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          default: aim.amd.com/v1alpha1
+        kind:
+          type: string
+          default: InferenceService
+        metadata:
+          type: object
+        spec:
+          type: object
+          properties:
+            gpuSharing:
+              $ref: '#/components/schemas/GPUSharingConfig'
+        status:
+          type: object
+          properties:
+            partitionInfo:
+              $ref: '#/components/schemas/PartitionInfo'
+            conditions:
+              type: array
+              items:
+                type: object
+
