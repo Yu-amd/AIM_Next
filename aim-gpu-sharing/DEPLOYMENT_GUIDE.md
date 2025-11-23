@@ -313,22 +313,41 @@ kubectl delete pvc model-cache-pvc -n aim-gpu-sharing
 
 ## Validation Checklist
 
-### Docker Deployment Validation
+### Basic Deployment Validation
 
+#### Docker Deployment
 - [ ] Container is running (`docker ps | grep vllm-server`)
 - [ ] Container logs show server ready
 - [ ] `/v1/models` endpoint returns model list
 - [ ] `/v1/chat/completions` endpoint returns responses
 - [ ] Web app can connect (if deployed)
 
-### Kubernetes Deployment Validation
-
+#### Kubernetes Deployment
 - [ ] Pod is in `Running` state (`kubectl get pods -n aim-gpu-sharing`)
 - [ ] Pod logs show server ready
 - [ ] Service is accessible (`kubectl get svc -n aim-gpu-sharing`)
 - [ ] `/v1/models` endpoint returns model list (via NodePort or port-forward)
 - [ ] `/v1/chat/completions` endpoint returns responses
 - [ ] Web app can connect (if deployed)
+
+### GPU Sharing/Partitioning Validation
+
+**See [VALIDATION_GUIDE.md](./VALIDATION_GUIDE.md) for detailed GPU sharing validation procedures.**
+
+Quick validation:
+```bash
+# Run validation script
+./validate-gpu-sharing.sh
+```
+
+Key checks:
+- [ ] Partition mode detected (SPX or CPX)
+- [ ] Correct number of logical devices (1 for SPX, 8 for CPX on MI300X)
+- [ ] Container/pod can access GPU (`amd-smi` works)
+- [ ] Multiple models can run simultaneously (GPU sharing working)
+- [ ] Partition assignment verified (if using partitions)
+- [ ] Memory usage per partition is isolated
+- [ ] No resource conflicts between models
 
 ---
 

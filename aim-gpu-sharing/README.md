@@ -261,6 +261,7 @@ See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete step-by-step instr
 
 ### Deployment Guides
 - **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment guide (Docker & Kubernetes) with validation
+- **[VALIDATION_GUIDE.md](./VALIDATION_GUIDE.md)** - GPU sharing/partitioning validation procedures
 - **[VLLM_INTEGRATION.md](./VLLM_INTEGRATION.md)** - vLLM integration details and architecture
 - **[examples/README.md](./examples/README.md)** - Example applications and usage
 
