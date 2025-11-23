@@ -92,6 +92,36 @@ class TestAIMProfileGenerator:
         assert profile.gpu_sharing["enabled"] is True
         assert "memory_limit_gb" in profile.gpu_sharing
         assert "partition_id" in profile.gpu_sharing
+        
+        # Verify partition mode information is included
+        assert "compute_mode" in profile.gpu_sharing, "compute_mode should be in gpu_sharing"
+        assert "memory_mode" in profile.gpu_sharing, "memory_mode should be in gpu_sharing"
+        assert "partition_count" in profile.gpu_sharing, "partition_count should be in gpu_sharing"
+        assert "partition_size_gb" in profile.gpu_sharing, "partition_size_gb should be in gpu_sharing"
+        
+        # Verify compute_mode is valid (SPX or CPX)
+        assert profile.gpu_sharing["compute_mode"] in ["SPX", "CPX"], \
+            f"compute_mode should be SPX or CPX, got {profile.gpu_sharing['compute_mode']}"
+        
+        # Verify memory_mode is valid (NPS1 or NPS4)
+        assert profile.gpu_sharing["memory_mode"] in ["NPS1", "NPS4"], \
+            f"memory_mode should be NPS1 or NPS4, got {profile.gpu_sharing['memory_mode']}"
+        
+        # Verify partition_count matches compute_mode
+        if profile.gpu_sharing["compute_mode"] == "CPX":
+            assert profile.gpu_sharing["partition_count"] == 8, \
+                "CPX mode should have 8 partitions"
+        elif profile.gpu_sharing["compute_mode"] == "SPX":
+            assert profile.gpu_sharing["partition_count"] == 1, \
+                "SPX mode should have 1 partition"
+        
+        # Verify partition_config in metadata
+        assert "partition_config" in profile.metadata, \
+            "partition_config should be in metadata"
+        partition_config = profile.metadata["partition_config"]
+        assert partition_config["compute_mode"] == profile.gpu_sharing["compute_mode"]
+        assert partition_config["memory_mode"] == profile.gpu_sharing["memory_mode"]
+        assert partition_config["partition_count"] == profile.gpu_sharing["partition_count"]
         assert "qos_priority" in profile.gpu_sharing
     
     def test_save_profile(self, generator, tmp_path):

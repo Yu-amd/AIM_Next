@@ -10,7 +10,11 @@
     "enabled": true,
     "memory_limit_gb": 11.25,
     "partition_id": null,
-    "qos_priority": "medium"
+    "qos_priority": "medium",
+    "compute_mode": "SPX",
+    "memory_mode": "NPS1",
+    "partition_count": 1,
+    "partition_size_gb": 192.0
   },
   "resource_requirements": {
     "gpu_memory_gb": 9.0,
@@ -21,6 +25,12 @@
   "metadata": {
     "quantization": "int4",
     "base_model": "Qwen/Qwen3-8B-Instruct",
-    "parameters": "8B"
+    "parameters": "8B",
+    "partition_config": {
+      "compute_mode": "SPX",
+      "memory_mode": "NPS1",
+      "partition_count": 1,
+      "partition_size_gb": 192.0
+    }
   }
 }

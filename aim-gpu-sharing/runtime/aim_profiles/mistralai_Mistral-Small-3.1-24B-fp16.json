@@ -10,7 +10,11 @@
     "enabled": true,
     "memory_limit_gb": 85.0,
     "partition_id": null,
-    "qos_priority": "medium"
+    "qos_priority": "medium",
+    "compute_mode": "SPX",
+    "memory_mode": "NPS1",
+    "partition_count": 1,
+    "partition_size_gb": 192.0
   },
   "resource_requirements": {
     "gpu_memory_gb": 68.0,
@@ -21,6 +25,12 @@
   "metadata": {
     "quantization": "fp16",
     "base_model": "mistralai/Mistral-Small-3.1-24B",
-    "parameters": "24B"
+    "parameters": "24B",
+    "partition_config": {
+      "compute_mode": "SPX",
+      "memory_mode": "NPS1",
+      "partition_count": 1,
+      "partition_size_gb": 192.0
+    }
   }
 }

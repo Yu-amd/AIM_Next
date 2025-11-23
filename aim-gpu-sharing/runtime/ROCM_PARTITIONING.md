@@ -48,7 +48,8 @@ Based on: [AMD ROCm Blog - MI300 Compute and Memory Partition Modes](https://roc
 |-------------|-------------|--------|
 | SPX | NPS1 | 1 device, full memory |
 | CPX | NPS1 | 8 devices, each sees full memory |
-| CPX | NPS4 | 8 devices, each sees 1/4 memory |
+| CPX | NPS4 | 8 devices, each gets 24GB (192GB/8) |
+| CPX | NPS1 | 8 devices, each gets 24GB (192GB/8) |
 
 ## Implementation
 

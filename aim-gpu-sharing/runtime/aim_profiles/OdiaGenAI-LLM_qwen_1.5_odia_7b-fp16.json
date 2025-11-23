@@ -10,7 +10,11 @@
     "enabled": true,
     "memory_limit_gb": 25.0,
     "partition_id": null,
-    "qos_priority": "medium"
+    "qos_priority": "medium",
+    "compute_mode": "SPX",
+    "memory_mode": "NPS1",
+    "partition_count": 1,
+    "partition_size_gb": 192.0
   },
   "resource_requirements": {
     "gpu_memory_gb": 20.0,
@@ -21,6 +25,12 @@
   "metadata": {
     "quantization": "fp16",
     "base_model": "OdiaGenAI-LLM/qwen_1.5_odia_7b",
-    "parameters": "7B"
+    "parameters": "7B",
+    "partition_config": {
+      "compute_mode": "SPX",
+      "memory_mode": "NPS1",
+      "partition_count": 1,
+      "partition_size_gb": 192.0
+    }
   }
 }

@@ -10,7 +10,11 @@
     "enabled": true,
     "memory_limit_gb": 7.5,
     "partition_id": null,
-    "qos_priority": "medium"
+    "qos_priority": "medium",
+    "compute_mode": "SPX",
+    "memory_mode": "NPS1",
+    "partition_count": 1,
+    "partition_size_gb": 192.0
   },
   "resource_requirements": {
     "gpu_memory_gb": 6.0,
@@ -21,6 +25,12 @@
   "metadata": {
     "quantization": "int8",
     "base_model": "meta-llama/Llama-3.2-3B-Instruct",
-    "parameters": "3B"
+    "parameters": "3B",
+    "partition_config": {
+      "compute_mode": "SPX",
+      "memory_mode": "NPS1",
+      "partition_count": 1,
+      "partition_size_gb": 192.0
+    }
   }
 }

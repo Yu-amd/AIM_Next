@@ -45,15 +45,55 @@ class AIMProfile:
 class AIMProfileGenerator:
     """Generates AIM profiles for models with multiple precision levels."""
     
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: Optional[str] = None, gpu_id: int = 0):
         """
         Initialize profile generator.
         
         Args:
             config_path: Path to model sizing config YAML file
+            gpu_id: GPU device ID for detecting partition modes
         """
         self.sizing_config = ModelSizingConfig(config_path)
         self.profiles: Dict[str, AIMProfile] = {}
+        self.gpu_id = gpu_id
+        
+        # Detect current partition modes from hardware
+        self.compute_mode: Optional[str] = None
+        self.memory_mode: Optional[str] = None
+        self.partition_count: int = 1
+        self.partition_size_gb: float = 192.0  # Default for MI300X
+        
+        self._detect_partition_modes()
+    
+    def _detect_partition_modes(self):
+        """Detect current partition modes from hardware."""
+        try:
+            from rocm_partitioner_real import ROCmPartitionerReal, ComputePartitionMode, MemoryPartitionMode
+            
+            partitioner = ROCmPartitionerReal(gpu_id=self.gpu_id)
+            if partitioner.amd_smi_available:
+                compute, memory = partitioner.get_current_partition_mode()
+                self.compute_mode = compute
+                self.memory_mode = memory
+                
+                # Try to initialize to get partition info
+                try:
+                    compute_enum = ComputePartitionMode(compute) if compute else ComputePartitionMode.SPX
+                    memory_enum = MemoryPartitionMode(memory) if memory else MemoryPartitionMode.NPS1
+                    
+                    if partitioner.initialize("MI300X", compute_enum, memory_enum):
+                        self.partition_count = len(partitioner.partitions)
+                        if partitioner.partitions:
+                            self.partition_size_gb = list(partitioner.partitions.values())[0].size_bytes / (1024 ** 3)
+                except Exception:
+                    # If initialization fails, use defaults
+                    pass
+        except Exception:
+            # Fall back to defaults if real partitioner not available
+            self.compute_mode = "SPX"
+            self.memory_mode = "NPS1"
+            self.partition_count = 1
+            self.partition_size_gb = 192.0
     
     def generate_profiles_for_model(
         self,
@@ -85,6 +125,17 @@ class AIMProfileGenerator:
             variant_id = f"{model_id}-{variant.precision}"
             version = f"{base_version}-{variant.precision}"
             
+            # Determine recommended partition based on available partitions
+            # In CPX mode with 8 partitions, each partition is 24GB (192GB / 8)
+            # In SPX mode with 1 partition, partition is 192GB
+            recommended_partition = variant.recommended_partition_gb
+            if self.compute_mode == "CPX" and self.partition_count == 8:
+                # CPX mode: each partition is 24GB (regardless of NPS1 or NPS4)
+                # NPS4: 4 quadrants of 48GB each, but each XCD gets 24GB
+                # NPS1: All XCDs see full memory, but each XCD still gets 24GB share
+                # Ensure model fits in 24GB partition
+                recommended_partition = min(variant.recommended_partition_gb, self.partition_size_gb * 0.9)
+            
             profile = AIMProfile(
                 model_id=model_id,
                 variant_id=variant_id,
@@ -92,12 +143,16 @@ class AIMProfileGenerator:
                 parameters=parameters,
                 precision=variant.precision,
                 memory_requirement_gb=variant.memory_gb,
-                recommended_partition_gb=variant.recommended_partition_gb,
+                recommended_partition_gb=recommended_partition,
                 gpu_sharing={
                     "enabled": True,
-                    "memory_limit_gb": variant.recommended_partition_gb,
+                    "memory_limit_gb": recommended_partition,
                     "partition_id": None,  # Will be assigned by scheduler
-                    "qos_priority": "medium"
+                    "qos_priority": "medium",
+                    "compute_mode": self.compute_mode or "SPX",
+                    "memory_mode": self.memory_mode or "NPS1",
+                    "partition_count": self.partition_count,
+                    "partition_size_gb": self.partition_size_gb
                 },
                 resource_requirements={
                     "gpu_memory_gb": variant.memory_gb,
@@ -108,7 +163,13 @@ class AIMProfileGenerator:
                 metadata={
                     "quantization": variant.precision,
                     "base_model": model_id,
-                    "parameters": parameters
+                    "parameters": parameters,
+                    "partition_config": {
+                        "compute_mode": self.compute_mode or "SPX",
+                        "memory_mode": self.memory_mode or "NPS1",
+                        "partition_count": self.partition_count,
+                        "partition_size_gb": self.partition_size_gb
+                    }
                 }
             )
             
