@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-multi-container-service
+  namespace: aim-gpu-sharing
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30082
+      protocol: TCP
+      name: http-1
+    - port: 8001
+      targetPort: 8001
+      nodePort: 30083
+      protocol: TCP
+      name: http-2
+  selector:
+    app: vllm-multi-container
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-multi-container-deployment
+  namespace: aim-gpu-sharing
+  labels:
+    app: vllm-multi-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-multi-container
+  template:
+    metadata:
+      labels:
+        app: vllm-multi-container
+    spec:
+      containers:
+      # First container
+      - name: vllm-server-1
+        image: rocm/7.0:rocm7.0_ubuntu_22.04_vllm_0.10.1_instinct_20250915
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Starting vLLM server 1 for model: $MODEL_ID"
+            python3 -m vllm.entrypoints.openai.api_server \
+              --model $MODEL_ID \
+              --host 0.0.0.0 \
+              --port 8000 \
+              --gpu-memory-utilization 0.5
+        env:
+        - name: MODEL_ID
+          value: "Qwen/Qwen2.5-7B-Instruct"
+        - name: VLLM_USE_ROCM
+          value: "1"
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a"
+        ports:
+        - containerPort: 8000
+          name: http-1
+        resources:
+          requests:
+            amd.com/gpu: "1"
+            cpu: "4"
+            memory: "16Gi"
+          limits:
+            amd.com/gpu: "1"
+            cpu: "8"
+            memory: "32Gi"
+        volumeMounts:
+        - name: model-cache
+          mountPath: /workspace/model-cache
+      # Second container
+      - name: vllm-server-2
+        image: rocm/7.0:rocm7.0_ubuntu_22.04_vllm_0.10.1_instinct_20250915
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Starting vLLM server 2 for model: $MODEL_ID"
+            python3 -m vllm.entrypoints.openai.api_server \
+              --model $MODEL_ID \
+              --host 0.0.0.0 \
+              --port 8001 \
+              --gpu-memory-utilization 0.4
+        env:
+        - name: MODEL_ID
+          value: "Qwen/Qwen2.5-7B-Instruct"
+        - name: VLLM_USE_ROCM
+          value: "1"
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a"
+        ports:
+        - containerPort: 8001
+          name: http-2
+        resources:
+          requests:
+            cpu: "4"
+            memory: "16Gi"
+          limits:
+            cpu: "8"
+            memory: "32Gi"
+        volumeMounts:
+        - name: model-cache
+          mountPath: /workspace/model-cache
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: model-cache-pvc
+      nodeSelector:
+        amd.com/gpu: "true"
+

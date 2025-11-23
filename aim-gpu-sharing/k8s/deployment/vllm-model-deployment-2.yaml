@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-model-service-2
+  namespace: aim-gpu-sharing
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30081
+      protocol: TCP
+      name: http
+  selector:
+    app: vllm-model-2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-model-deployment-2
+  namespace: aim-gpu-sharing
+  labels:
+    app: vllm-model-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-model-2
+  template:
+    metadata:
+      labels:
+        app: vllm-model-2
+    spec:
+      containers:
+      - name: vllm-server
+        image: rocm/7.0:rocm7.0_ubuntu_22.04_vllm_0.10.1_instinct_20250915
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsUser: 0
+          runAsGroup: 0
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Starting vLLM server for model: $MODEL_ID"
+            python3 -m vllm.entrypoints.openai.api_server \
+              --model $MODEL_ID \
+              --host 0.0.0.0 \
+              --port 8000 \
+              --gpu-memory-utilization 0.4 \
+              --device rocm
+        env:
+        - name: MODEL_ID
+          value: "Qwen/Qwen2.5-7B-Instruct"
+        - name: VLLM_USE_ROCM
+          value: "1"
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a"
+        - name: HSA_OVERRIDE_GFX_VERSION
+          value: "11.0.0"
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            cpu: "4"
+            memory: "16Gi"
+          limits:
+            cpu: "8"
+            memory: "32Gi"
+        volumeMounts:
+        - name: model-cache
+          mountPath: /workspace/model-cache
+        - name: dev-kfd
+          mountPath: /dev/kfd
+        - name: dev-dri
+          mountPath: /dev/dri
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: model-cache-pvc
+      - name: dev-kfd
+        hostPath:
+          path: /dev/kfd
+          type: CharDevice
+      - name: dev-dri
+        hostPath:
+          path: /dev/dri
+          type: Directory
+      nodeSelector:
+        amd.com/gpu: "true"
+

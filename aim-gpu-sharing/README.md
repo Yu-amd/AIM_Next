@@ -257,10 +257,47 @@ curl http://${NODE_IP}:30080/v1/models
 
 See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete step-by-step instructions and validation procedures.
 
+## GPU Sharing Validation
+
+### Supported Methods
+
+✅ **Docker GPU Sharing** - **WORKS**
+- Multiple Docker containers can share the same GPU
+- Bypasses Kubernetes resource allocation
+- Both containers access GPU devices directly
+- See [DOCKER_GPU_SHARING_VALIDATION.md](./DOCKER_GPU_SHARING_VALIDATION.md) for complete instructions
+
+### Unsupported Methods
+
+❌ **Kubernetes Multi-Pod GPU Sharing** - **NOT SUPPORTED**
+- AMD GPU operator does not support time-slicing
+- Only one pod can request `amd.com/gpu: "1"` at a time
+- Exclusive GPU allocation enforced per pod
+- See [AMD_GPU_OPERATOR_LIMITATIONS.md](./AMD_GPU_OPERATOR_LIMITATIONS.md) for details
+
+❌ **CPX Mode (8 Partitions)** - **NOT AVAILABLE**
+- Hardware limitation on Digital Ocean MI300X instances
+- Only SPX mode (1 partition) is advertised
+- CPX mode requires hardware support that's not available
+- See [GPU_SHARING_TEST_RESULTS.md](./GPU_SHARING_TEST_RESULTS.md) for test results
+
+❌ **Multi-Container Pod** - **DOESN'T WORK**
+- Pod cannot be scheduled if multiple containers need GPU access
+- AMD GPU operator enforces exclusive allocation per pod
+- Even containers without GPU request cannot access GPU devices
+
+### Test Results
+
+Complete test results and validation procedures:
+- **[GPU_SHARING_TEST_RESULTS.md](./GPU_SHARING_TEST_RESULTS.md)** - Complete test results for all options
+- **[DOCKER_GPU_SHARING_VALIDATION.md](./DOCKER_GPU_SHARING_VALIDATION.md)** - Step-by-step Docker validation guide
+- **[AMD_GPU_OPERATOR_LIMITATIONS.md](./AMD_GPU_OPERATOR_LIMITATIONS.md)** - Kubernetes limitations explained
+
 ## Documentation
 
 ### Deployment Guides
 - **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment guide (Docker & Kubernetes) with validation
+- **[DOCKER_GPU_SHARING_VALIDATION.md](./DOCKER_GPU_SHARING_VALIDATION.md)** - Docker GPU sharing validation guide
 - **[VALIDATION_GUIDE.md](./VALIDATION_GUIDE.md)** - GPU sharing/partitioning validation procedures
 - **[VLLM_INTEGRATION.md](./VLLM_INTEGRATION.md)** - vLLM integration details and architecture
 - **[examples/README.md](./examples/README.md)** - Example applications and usage

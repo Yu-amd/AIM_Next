@@ -45,39 +45,83 @@ echo ""
 
 # 2. Check partition mode
 log_info "2. GPU Partition Mode:"
-COMPUTE_PARTITION=$(amd-smi --show-compute-partition 2>/dev/null | grep -i "compute partition" | awk '{print $3}' || echo "Unknown")
+# Extract partition mode from amd-smi output (format: SPX/NPS1 or CPX/NPS4)
+PARTITION_LINE=$(amd-smi 2>/dev/null | grep -E "SPX|CPX" | grep -v "Partition-Mode" | head -1)
+if [ -n "$PARTITION_LINE" ]; then
+    COMPUTE_PARTITION=$(echo "$PARTITION_LINE" | awk '{for(i=1;i<=NF;i++) if($i ~ /SPX|CPX/) {print $i; exit}}' | cut -d'/' -f1)
+    MEMORY_PARTITION=$(echo "$PARTITION_LINE" | awk '{for(i=1;i<=NF;i++) if($i ~ /SPX|CPX/) {print $i; exit}}' | cut -d'/' -f2)
+else
+    COMPUTE_PARTITION=""
+    MEMORY_PARTITION=""
+fi
+
 if [ "$COMPUTE_PARTITION" = "CPX" ]; then
     log_success "CPX mode detected (8 partitions for MI300X)"
     EXPECTED_PARTITIONS=8
 elif [ "$COMPUTE_PARTITION" = "SPX" ]; then
-    log_success "SPX mode detected (1 partition)"
+    log_success "SPX mode detected (1 partition, 192GB total)"
+    EXPECTED_PARTITIONS=1
+elif [ -n "$COMPUTE_PARTITION" ]; then
+    log_info "Partition mode: $COMPUTE_PARTITION"
     EXPECTED_PARTITIONS=1
 else
-    log_warning "Partition mode: $COMPUTE_PARTITION"
+    log_warning "Could not detect partition mode from amd-smi output"
     EXPECTED_PARTITIONS=1
+fi
+if [ -n "$MEMORY_PARTITION" ]; then
+    echo "  Memory mode: $MEMORY_PARTITION"
 fi
 echo ""
 
 # 3. Check logical devices
 log_info "3. Logical Devices (Partitions):"
-DEVICE_COUNT=$(amd-smi -L 2>/dev/null | wc -l)
+# Count GPU devices from amd-smi output
+DEVICE_COUNT=$(amd-smi 2>/dev/null | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+" | wc -l)
+if [ -z "$DEVICE_COUNT" ] || [ "$DEVICE_COUNT" = "0" ]; then
+    # Alternative: count GPU lines
+    DEVICE_COUNT=$(amd-smi 2>/dev/null | grep -c "AMD Instinct\|GPU[[:space:]]*[0-9]" || echo "1")
+fi
+
 if [ "$DEVICE_COUNT" -eq "$EXPECTED_PARTITIONS" ]; then
     log_success "Found $DEVICE_COUNT device(s) (expected $EXPECTED_PARTITIONS)"
+elif [ "$DEVICE_COUNT" -gt 0 ]; then
+    log_info "Found $DEVICE_COUNT device(s) (expected $EXPECTED_PARTITIONS for $COMPUTE_PARTITION mode)"
 else
-    log_warning "Found $DEVICE_COUNT device(s), expected $EXPECTED_PARTITIONS"
+    log_warning "Could not detect device count, assuming 1 device"
+    DEVICE_COUNT=1
 fi
-amd-smi -L 2>/dev/null | head -10
+echo "GPU Device Info:"
+amd-smi 2>/dev/null | grep -E "AMD Instinct|^[[:space:]]*[0-9]+" | head -3
 echo ""
 
-# 4. Check memory partition
+# 4. Memory partition already extracted above, just display
 log_info "4. Memory Partition Mode:"
-MEMORY_PARTITION=$(amd-smi --show-memory-partition 2>/dev/null | grep -i "memory partition" | awk '{print $3}' || echo "Unknown")
-echo "Memory Partition: $MEMORY_PARTITION"
+if [ -n "$MEMORY_PARTITION" ]; then
+    echo "  Memory mode: $MEMORY_PARTITION"
+    if [ "$MEMORY_PARTITION" = "NPS1" ]; then
+        echo "  (All partitions see full memory)"
+    elif [ "$MEMORY_PARTITION" = "NPS4" ]; then
+        echo "  (Memory divided into 4 quadrants)"
+    fi
+else
+    echo "  Could not detect memory partition mode"
+fi
 echo ""
 
 # 5. Check GPU memory usage
 log_info "5. GPU Memory Usage:"
-amd-smi --showmeminfo vram 2>/dev/null | head -15 || log_warning "Could not get memory info"
+echo "Current GPU memory usage:"
+MEMORY_INFO=$(amd-smi 2>/dev/null | grep -E "Mem-Usage|VRAM_MEM|MEM_USAGE" | head -3)
+if [ -n "$MEMORY_INFO" ]; then
+    echo "$MEMORY_INFO"
+    # Extract memory usage numbers
+    MEM_USAGE=$(amd-smi 2>/dev/null | grep -E "[0-9]+/[0-9]+ MB" | awk '{print $(NF-1)}' | head -1)
+    if [ -n "$MEM_USAGE" ]; then
+        echo "  Current usage: $MEM_USAGE"
+    fi
+else
+    log_warning "Could not get detailed memory info"
+fi
 echo ""
 
 # 6. Check running vLLM instances
@@ -99,14 +143,18 @@ if command -v docker &> /dev/null; then
 fi
 
 # Kubernetes
-if command -v kubectl &> /dev/null && kubectl cluster-info &> /dev/null; then
+if command -v kubectl &> /dev/null && kubectl cluster-info &> /dev/null 2>/dev/null; then
     K8S_PODS=$(kubectl get pods -n aim-gpu-sharing -l app=vllm-model -o jsonpath='{.items[*].metadata.name}' 2>/dev/null || echo "")
     if [ -n "$K8S_PODS" ]; then
         echo "Kubernetes pods:"
         for pod in $K8S_PODS; do
             echo "  - $pod"
-            PARTITION_ID=$(kubectl exec -n aim-gpu-sharing $pod -- env 2>/dev/null | grep -i "PARTITION_ID" | cut -d= -f2 || echo "not set")
-            echo "    Partition ID: ${PARTITION_ID:-not set}"
+            PARTITION_ID=$(kubectl exec -n aim-gpu-sharing $pod -- env 2>/dev/null | grep -i "PARTITION_ID\|AIM_PARTITION" | cut -d= -f2 | head -1 || echo "not set")
+            if [ "$PARTITION_ID" != "not set" ] && [ -n "$PARTITION_ID" ]; then
+                echo "    Partition ID: $PARTITION_ID"
+            else
+                echo "    Partition ID: not set (using default/all GPU)"
+            fi
         done
     else
         echo "  No Kubernetes vLLM pods found"
@@ -116,7 +164,12 @@ echo ""
 
 # 7. Check GPU utilization
 log_info "7. GPU Utilization:"
-amd-smi --showuse 2>/dev/null | head -10 || log_warning "Could not get utilization info"
+UTIL_INFO=$(amd-smi 2>/dev/null | grep -E "GFX-Uti|CU %|Utilization" | head -3)
+if [ -n "$UTIL_INFO" ]; then
+    echo "$UTIL_INFO"
+else
+    log_warning "Could not get utilization info"
+fi
 echo ""
 
 # 8. Validate GPU sharing

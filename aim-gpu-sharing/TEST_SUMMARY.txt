@@ -1,0 +1,21 @@
+GPU Sharing Test Results - Summary
+===================================
+
+✅ Option 1: Docker GPU Sharing - WORKS
+   - Two Docker containers can share the same GPU
+   - Both containers running and serving models
+   - Both processes visible in amd-smi
+   - Memory divided: ~43GB + ~14GB = ~57GB total
+   - Both endpoints responding
+
+❌ Option 2: CPX Mode - NOT AVAILABLE
+   - Hardware only supports SPX/NPS1 mode
+   - Cannot create 8 partitions
+   - Digital Ocean MI300X limitation
+
+❌ Option 3: Multi-Container Pod - DOESN'T WORK
+   - Pod cannot be scheduled in Kubernetes
+   - Error: Insufficient amd.com/gpu
+   - AMD GPU operator enforces exclusive allocation
+
+RECOMMENDATION: Use Docker for GPU sharing validation

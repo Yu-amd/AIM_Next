@@ -305,9 +305,11 @@ echo "=========================================="
 ## Key Validation Points
 
 ### ✅ Partition Creation
-- [ ] `amd-smi --show-compute-partition` shows CPX or SPX
-- [ ] `amd-smi -L` shows multiple devices (if CPX)
+- [ ] `amd-smi` output shows partition mode (SPX/NPS1 or CPX/NPS4)
+- [ ] Partition mode column shows correct mode
 - [ ] Partitions are accessible from containers/pods
+
+**Note:** Some amd-smi versions don't support `--show-compute-partition` flag. Use the main `amd-smi` output which shows partition mode in the table.
 
 ### ✅ Partition Assignment
 - [ ] Environment variable `AIM_PARTITION_ID` is set (if using partitions)
