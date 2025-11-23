@@ -6,6 +6,7 @@ This document provides an overview of all documentation in the AIM GPU Sharing p
 
 ### Getting Started
 - **[README.md](./README.md)** - Main project documentation, quick start guide, and overview
+- **[VLLM_INTEGRATION.md](./VLLM_INTEGRATION.md)** - vLLM integration guide and workflow
 - **[TESTING.md](./TESTING.md)** - Comprehensive testing guide and instructions
 
 ### Test Infrastructure
@@ -18,6 +19,11 @@ This document provides an overview of all documentation in the AIM GPU Sharing p
 - **[HARDWARE_TEST_STATUS.md](./HARDWARE_TEST_STATUS.md)** - Current hardware test status
 - **[TEST_REPORT.md](./TEST_REPORT.md)** - Comprehensive test report
 - **[tests/CHANGELOG.md](./tests/CHANGELOG.md)** - Test infrastructure changelog
+
+### Examples and Applications
+- **[examples/README.md](./examples/README.md)** - Example applications guide
+- **examples/cli/model_client.py** - CLI client for model interaction
+- **examples/web/web_app.py** - Web application for model serving
 
 ## Runtime Documentation
 

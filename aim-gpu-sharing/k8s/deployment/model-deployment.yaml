@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aim-gpu-sharing
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-model-service
+  namespace: aim-gpu-sharing
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080
+      protocol: TCP
+      name: http
+  selector:
+    app: vllm-model
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-model-deployment
+  namespace: aim-gpu-sharing
+  labels:
+    app: vllm-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-model
+  template:
+    metadata:
+      labels:
+        app: vllm-model
+    spec:
+      containers:
+      - name: vllm-server
+        image: aim-gpu-sharing-vllm:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: MODEL_ID
+          value: "Qwen/Qwen2.5-7B-Instruct"  # Change this to your model
+        - name: VLLM_USE_ROCM
+          value: "1"
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a"
+        - name: AIM_PARTITION_ID
+          value: "0"  # GPU partition ID (optional)
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Starting vLLM server for model: $MODEL_ID"
+            python3 -m vllm.entrypoints.openai.api_server \
+              --model $MODEL_ID \
+              --host 0.0.0.0 \
+              --port 8000 \
+              --gpu-memory-utilization 0.95
+        resources:
+          requests:
+            amd.com/gpu: "1"
+            memory: "16Gi"
+            cpu: "4"
+          limits:
+            amd.com/gpu: "1"
+            memory: "32Gi"
+            cpu: "8"
+        volumeMounts:
+        - name: model-cache
+          mountPath: /workspace/model-cache
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: model-cache-pvc
+      nodeSelector:
+        amd.com/gpu: "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache-pvc
+  namespace: aim-gpu-sharing
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: local-storage
+

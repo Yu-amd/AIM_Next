@@ -1,0 +1,105 @@
+# AIM GPU Sharing + vLLM Container
+# Based on AIM-Engine workflow: https://github.com/Yu-amd/aim-engine
+FROM rocm/vllm:latest
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONPATH="/workspace/aim-gpu-sharing/runtime"
+ENV HF_HOME="/workspace/model-cache"
+ENV TRANSFORMERS_CACHE="/workspace/model-cache"
+ENV HF_DATASETS_CACHE="/workspace/model-cache"
+ENV HF_HUB_DISABLE_TELEMETRY="1"
+ENV VLLM_USE_ROCM=1
+ENV PYTORCH_ROCM_ARCH=gfx90a
+
+# Install additional dependencies
+RUN pip3 install --no-cache-dir \
+    pyyaml \
+    requests \
+    numpy \
+    scipy \
+    psutil \
+    huggingface-hub \
+    fastapi \
+    uvicorn
+
+# Create workspace directory
+WORKDIR /workspace
+
+# Copy AIM GPU Sharing runtime components
+COPY runtime/ /workspace/aim-gpu-sharing/runtime/
+COPY requirements.txt /workspace/aim-gpu-sharing/
+
+# Install Python dependencies
+RUN cd /workspace/aim-gpu-sharing && \
+    pip3 install --no-cache-dir -r requirements.txt || true
+
+# Create cache directories
+RUN mkdir -p /workspace/model-cache /tmp/.cache /root/.cache/huggingface
+
+# Create convenience scripts
+RUN echo '#!/bin/bash\n\
+# Generate optimal vLLM command for a model\n\
+# Usage: aim-vllm-generate <model-id> [options]\n\
+MODEL_ID=$1\n\
+shift\n\
+\n\
+# Default vLLM command\n\
+CMD="python3 -m vllm.entrypoints.openai.api_server"\n\
+CMD="$CMD --model $MODEL_ID"\n\
+CMD="$CMD --host 0.0.0.0"\n\
+CMD="$CMD --port 8000"\n\
+\n\
+# Add GPU sharing partition if specified\n\
+if [ -n "$AIM_PARTITION_ID" ]; then\n\
+    CMD="$CMD --gpu-memory-utilization 0.95"\n\
+    echo "Using GPU partition: $AIM_PARTITION_ID"\n\
+fi\n\
+\n\
+# Add any additional arguments\n\
+CMD="$CMD $@"\n\
+\n\
+echo "Generated vLLM command:"\n\
+echo "$CMD"\n\
+echo ""\n\
+echo "To run: eval $CMD"\n\
+' > /usr/local/bin/aim-vllm-generate && \
+    chmod +x /usr/local/bin/aim-vllm-generate
+
+RUN echo '#!/bin/bash\n\
+# Run vLLM server with model\n\
+# Usage: aim-vllm-serve <model-id> [options]\n\
+MODEL_ID=$1\n\
+shift\n\
+\n\
+if [ -z "$MODEL_ID" ]; then\n\
+    echo "Error: Model ID required"\n\
+    echo "Usage: aim-vllm-serve <model-id> [options]"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Generate and execute command\n\
+eval $(aim-vllm-generate "$MODEL_ID" "$@")\n\
+' > /usr/local/bin/aim-vllm-serve && \
+    chmod +x /usr/local/bin/aim-vllm-serve
+
+RUN echo '#!/bin/bash\n\
+# Interactive shell with AIM GPU Sharing tools\n\
+cd /workspace/aim-gpu-sharing\n\
+if [ $# -eq 0 ]; then\n\
+    echo "AIM GPU Sharing + vLLM Container"\n\
+    echo "Available commands:"\n\
+    echo "  aim-vllm-generate <model-id>  - Generate vLLM command"\n\
+    echo "  aim-vllm-serve <model-id>     - Start vLLM server"\n\
+    echo "  python3 -m vllm.entrypoints.openai.api_server --help"\n\
+    exec /bin/bash\n\
+else\n\
+    exec "$@"\n\
+fi\n\
+' > /usr/local/bin/aim-shell && \
+    chmod +x /usr/local/bin/aim-shell
+
+# Default command
+CMD ["/bin/bash"]
+

@@ -9,7 +9,9 @@ ROCm-based GPU resource sharing and partitioning to enable efficient multi-model
 - ✅ **Resource isolation** - Compute and memory isolation per partition
 - ✅ **QoS guarantees** - Priority-based scheduling and SLO tracking
 - ✅ **KServe CRD integration** - Kubernetes-native model serving
+- ✅ **vLLM integration** - Deploy models using vLLM with GPU sharing (based on [AIM-Engine](https://github.com/Yu-amd/aim-engine))
 - ✅ **Prometheus metrics** - Comprehensive monitoring and observability
+- ✅ **Example applications** - CLI and web interfaces for model interaction
 
 ## Architecture
 
@@ -194,13 +196,83 @@ python3 tests/run_all_tests.py
 
 For detailed testing documentation, see [TESTING.md](./TESTING.md) and [tests/README.md](./tests/README.md).
 
+## vLLM Integration
+
+This project integrates with vLLM for actual model serving, following the workflow from [AIM-Engine](https://github.com/Yu-amd/aim-engine).
+
+### Deployment Methods
+
+We support two deployment methods:
+
+1. **Docker Deployment** - Quick setup for development and testing
+2. **Kubernetes Deployment** - Production-ready deployment with scaling and management
+
+### Complete Deployment Guide
+
+For step-by-step instructions on a clean node, see **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)**.
+
+This guide includes:
+- Prerequisites and verification steps
+- Docker deployment with validation
+- Kubernetes deployment with validation
+- Troubleshooting common issues
+- Cleanup procedures
+
+### Quick Start
+
+#### Docker Deployment
+
+```bash
+# 1. Run vLLM container
+docker run -d --name vllm-server \
+  --device=/dev/kfd --device=/dev/dri \
+  -p 8001:8000 \
+  -v $(pwd)/model-cache:/workspace/model-cache \
+  rocm/7.0:rocm7.0_ubuntu_22.04_vllm_0.10.1_instinct_20250915 \
+  python3 -m vllm.entrypoints.openai.api_server \
+    --model Qwen/Qwen2.5-7B-Instruct \
+    --host 0.0.0.0 --port 8000
+
+# 2. Validate
+curl http://localhost:8001/v1/models
+
+# 3. Test web app
+python3 examples/web/web_app.py --endpoint http://localhost:8001/v1 --port 5000 --host 0.0.0.0
+```
+
+#### Kubernetes Deployment
+
+```bash
+# 1. Deploy model
+./k8s/deployment/deploy-model.sh Qwen/Qwen2.5-7B-Instruct
+
+# 2. Validate
+kubectl get pods -n aim-gpu-sharing
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+curl http://${NODE_IP}:30080/v1/models
+
+# 3. Deploy web app
+./k8s/deployment/deploy-web-app.sh
+```
+
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete step-by-step instructions and validation procedures.
+
 ## Documentation
 
+### Deployment Guides
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment guide (Docker & Kubernetes) with validation
+- **[VLLM_INTEGRATION.md](./VLLM_INTEGRATION.md)** - vLLM integration details and architecture
+- **[examples/README.md](./examples/README.md)** - Example applications and usage
+
+### Testing Documentation
 - **[TESTING.md](./TESTING.md)** - Comprehensive testing guide
 - **[tests/README.md](./tests/README.md)** - Test infrastructure overview
 - **[tests/HARDWARE_TESTING.md](./tests/HARDWARE_TESTING.md)** - Hardware testing documentation
 - **[HARDWARE_TEST_STATUS.md](./HARDWARE_TEST_STATUS.md)** - Current hardware test status
+
+### Reference
 - **[DOCUMENTATION.md](./DOCUMENTATION.md)** - Complete documentation index
+- **[STATUS.md](./STATUS.md)** - Project status and roadmap
 
 ## Contributing
 

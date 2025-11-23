@@ -21,6 +21,13 @@ All core functionality has been implemented, tested, and validated on real hardw
 - **Operator Manifests**: RBAC and deployment validated
 - **Metrics Exporter**: Structure validated, Prometheus integration ready
 
+### ✅ vLLM Integration (NEW)
+- **Docker Container**: vLLM container with GPU sharing support
+- **Kubernetes Deployment**: Automated model deployment scripts
+- **CLI Application**: Interactive command-line interface
+- **Web Application**: Modern web UI for model interaction
+- **Based on**: [AIM-Engine workflow](https://github.com/Yu-amd/aim-engine)
+
 ### ✅ Testing Infrastructure
 - **Test Suites**: 7 comprehensive test suites
 - **Test Count**: 93+ tests, all passing
@@ -44,6 +51,28 @@ All core functionality has been implemented, tested, and validated on real hardw
 - ✅ amd-smi available and working
 - ✅ Partition mode: SPX/NPS1
 - ✅ All hardware tests passing
+
+## Recent Additions
+
+### vLLM Integration ✅
+- Docker container build infrastructure
+- Kubernetes deployment automation
+- CLI and web example applications
+- Complete integration with GPU sharing
+
+**Quick Start:**
+```bash
+# Build container
+./docker/build-vllm-container.sh
+
+# Deploy model
+./k8s/deployment/deploy-model.sh meta-llama/Llama-3.1-8B-Instruct
+
+# Test with CLI
+python3 examples/cli/model_client.py --endpoint http://localhost:8000/v1
+```
+
+See [VLLM_INTEGRATION.md](./VLLM_INTEGRATION.md) for details.
 
 ## Next Steps
 
