@@ -337,7 +337,7 @@ class GuardrailService:
                         # Allow but mark for logging/watermarking
                         logger.warning(f"Soft fail for {policy.guardrail_type.value}: {result.message}")
                         # Could add watermark or weaken response here
-                    el                    if policy.action == GuardrailAction.REDACT:
+                    elif policy.action == GuardrailAction.REDACT:
                         if result.redacted_content:
                             prompt = result.redacted_content
             except Exception as e:

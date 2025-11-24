@@ -362,20 +362,144 @@ python3 examples/example_usage.py
 
 ## Architecture
 
+### High-Level Architecture (AIM + Guardrail Layer)
+
+The guardrail microservice acts as a proxy/middleware layer between clients and the AIM inference service. This architecture ensures all requests and responses are checked before reaching clients.
+
+```
+[ Client / App / Portal ]
+            |
+            v
+   [ API Gateway / Ingress ]
+      (Istio, NGINX, etc.)
+            |
+            v
+   [ Guardrail Microservice ]
+   - Pre-filters on prompt
+   - Orchestrates guardrail models
+   - Calls AIM
+            |
+            v
+[ AMD Inference Microservice (AIM) ]
+     (KServe InferenceService)
+            |
+            v
+   [ Guardrail Microservice ]
+     Post-filters on response
+            |
+            v
+[ Client / App / Portal ]
+```
+
+**Key Points:**
+- The **Guardrail Microservice** is the only service the API Gateway talks to
+- It runs **fast pre-filters** on the prompt before calling AIM
+- It **calls AIM's KServe endpoint** for inference
+- It runs **post-filters** on the output (plus context/retrieved docs for RAG)
+- It returns a **guarded response + metadata**
+
+### Implementation Components
+
+The guardrail service supports three deployment patterns:
+
+#### 1. Proxy Pattern (Recommended for Gateway Integration)
+```python
+from integration.inference_proxy import InferenceProxy
+from guardrails.core.guardrail_service import GuardrailService
+
+# Initialize proxy
+guardrail_service = GuardrailService()
+proxy = InferenceProxy(
+    inference_endpoint="http://aim-inference-service:8080/predict",
+    guardrail_service=guardrail_service
+)
+
+# Forward request through guardrails
+allowed, response, error = proxy.forward_request(
+    prompt="What is AI?",
+    use_case="chat"
+)
+```
+
+#### 2. KServe Transformer Pattern
+```yaml
+# Deploy as KServe transformer wrapping AIM
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: aim-with-guardrails
+spec:
+  transformer:
+    containers:
+      - name: guardrail-transformer
+        image: aim-guardrails:latest
+  predictor:
+    containers:
+      - name: aim-inference
+        image: aim-inference:latest
+```
+
+#### 3. Standalone Service
+```python
+# Direct API calls to guardrail service
+from guardrails.api.server import init_service
+
+# Initialize and run API server
+init_service()
+# Server runs on port 8080
+```
+
+### Project Structure
+
 ```
 aim-guardrails/
 ├── guardrails/          # Core guardrail components
-│   ├── core/           # Guardrail service
+│   ├── core/           # Guardrail service, config, latency budget
 │   ├── types/          # Guardrail type implementations
 │   ├── policy/         # Policy management
-│   └── api/            # REST API server
+│   ├── api/            # REST API server
+│   ├── kserve/         # KServe transformer integration
+│   ├── monitoring/     # Prometheus metrics
+│   └── traffic/        # Rate limiting and traffic guardrails
 ├── integration/        # Inference endpoint integration
+│   └── inference_proxy.py  # Proxy pattern implementation
 ├── k8s/                # Kubernetes resources
 │   ├── crd/            # Custom Resource Definitions
-│   └── deployment/     # Deployment manifests
+│   ├── deployment/     # Deployment manifests
+│   └── kserve/         # KServe deployment manifests
 ├── examples/           # Usage examples
 └── tests/              # Test scripts
 ```
+
+### Request Flow
+
+1. **Client Request** → API Gateway receives request
+2. **Gateway** → Routes to Guardrail Microservice
+3. **Pre-Filter** → Guardrail service checks prompt:
+   - Prompt injection detection
+   - Toxicity check
+   - PII detection (if disallowed)
+   - Secrets scanning
+   - Rate limiting
+4. **AIM Call** → If pre-filter passes, forward to AIM inference service
+5. **Post-Filter** → Guardrail service checks response:
+   - Toxicity check
+   - PII redaction
+   - All-in-one safety judge (Llama Guard)
+   - Policy compliance
+   - Secrets scanning (for code)
+6. **Response** → Return guarded response + metadata to client
+
+### Latency Budget Management
+
+The guardrail service automatically optimizes model selection based on use case and latency budgets:
+
+- **Chat** (~100ms budget): Fast models (RoBERTa, Presidio, ProtectAI)
+- **RAG** (~150ms budget): Medium models (Piiranha, optional Llama Guard)
+- **Code-gen** (~200ms budget): Comprehensive models (can run async)
+- **Batch** (~500ms budget): All models, throughput optimized
+
+See [KSERVE_INTEGRATION.md](./KSERVE_INTEGRATION.md) for detailed deployment patterns.
 
 ## Development Status
 
