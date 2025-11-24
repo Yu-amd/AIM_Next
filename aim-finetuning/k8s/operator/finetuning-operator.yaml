@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finetuning-operator
+  namespace: aim-finetuning
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finetuning-operator
+  template:
+    metadata:
+      labels:
+        app: finetuning-operator
+    spec:
+      serviceAccountName: finetuning-operator
+      containers:
+        - name: controller
+          image: aim-finetuning-controller:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: finetuning-operator
+  namespace: aim-finetuning
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: finetuning-operator
+rules:
+  - apiGroups: ["aim.amd.com"]
+    resources: ["finetuningjobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["aim.amd.com"]
+    resources: ["finetuningjobs/status"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: finetuning-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: finetuning-operator
+subjects:
+  - kind: ServiceAccount
+    name: finetuning-operator
+    namespace: aim-finetuning
+

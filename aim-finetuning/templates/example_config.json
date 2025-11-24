@@ -1,0 +1,30 @@
+{
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "method": "lora",
+  "dataset": {
+    "path": "/workspace/data/train.jsonl",
+    "format": "jsonl"
+  },
+  "hyperparameters": {
+    "learning_rate": 2e-4,
+    "batch_size": 4,
+    "epochs": 3,
+    "max_seq_length": 2048,
+    "warmup_steps": 100,
+    "logging_steps": 10,
+    "save_steps": 500,
+    "gradient_accumulation_steps": 1,
+    "gradient_checkpointing": true,
+    "fp16": true,
+    "seed": 42
+  },
+  "lora_config": {
+    "r": 16,
+    "lora_alpha": 32,
+    "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
+    "lora_dropout": 0.05,
+    "bias": "none"
+  },
+  "output_dir": "/workspace/output"
+}
+

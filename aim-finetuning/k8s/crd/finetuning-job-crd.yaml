@@ -1,0 +1,189 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: finetuningjobs.aim.amd.com
+spec:
+  group: aim.amd.com
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                baseModel:
+                  type: object
+                  properties:
+                    modelId:
+                      type: string
+                      description: HuggingFace model ID
+                    profile:
+                      type: string
+                      description: AIM profile name (optional)
+                  required:
+                    - modelId
+                method:
+                  type: string
+                  enum: ["lora", "qlora", "full"]
+                  description: Fine-tuning method
+                dataset:
+                  type: object
+                  properties:
+                    source:
+                      type: string
+                      description: Dataset source (file path, S3, or HuggingFace dataset ID)
+                    format:
+                      type: string
+                      enum: ["jsonl", "csv", "hf", "auto"]
+                      default: "auto"
+                      description: Dataset format
+                  required:
+                    - source
+                hyperparameters:
+                  type: object
+                  properties:
+                    learningRate:
+                      type: number
+                      default: 0.0002
+                    batchSize:
+                      type: integer
+                      default: 4
+                    epochs:
+                      type: integer
+                      default: 3
+                    maxSeqLength:
+                      type: integer
+                      default: 2048
+                    warmupSteps:
+                      type: integer
+                      default: 100
+                    gradientAccumulationSteps:
+                      type: integer
+                      default: 1
+                    gradientCheckpointing:
+                      type: boolean
+                      default: true
+                    fp16:
+                      type: boolean
+                      default: true
+                    bf16:
+                      type: boolean
+                      default: false
+                    seed:
+                      type: integer
+                      default: 42
+                loraConfig:
+                  type: object
+                  properties:
+                    r:
+                      type: integer
+                      default: 16
+                      description: LoRA rank
+                    loraAlpha:
+                      type: integer
+                      default: 32
+                      description: LoRA alpha
+                    targetModules:
+                      type: array
+                      items:
+                        type: string
+                      default: ["q_proj", "v_proj", "k_proj", "o_proj"]
+                    loraDropout:
+                      type: number
+                      default: 0.05
+                quantizationConfig:
+                  type: object
+                  properties:
+                    loadIn4bit:
+                      type: boolean
+                      default: true
+                    bnb4bitComputeDtype:
+                      type: string
+                      default: "float16"
+                    bnb4bitUseDoubleQuant:
+                      type: boolean
+                      default: true
+                    bnb4bitQuantType:
+                      type: string
+                      default: "nf4"
+                output:
+                  type: object
+                  properties:
+                    registry:
+                      type: string
+                      description: Model registry URL (optional)
+                    profile:
+                      type: string
+                      default: "auto-generate"
+                      description: AIM profile generation mode
+                resources:
+                  type: object
+                  properties:
+                    requests:
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                      additionalProperties: true
+                    limits:
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                      additionalProperties: true
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                  enum: ["Pending", "Running", "Succeeded", "Failed", "Paused"]
+                startTime:
+                  type: string
+                  format: date-time
+                completionTime:
+                  type: string
+                  format: date-time
+                currentEpoch:
+                  type: integer
+                totalEpochs:
+                  type: integer
+                currentStep:
+                  type: integer
+                totalSteps:
+                  type: integer
+                trainLoss:
+                  type: number
+                checkpointPath:
+                  type: string
+                modelPath:
+                  type: string
+                aimProfilePath:
+                  type: string
+                message:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      message:
+                        type: string
+      subresources:
+        status: {}
+  scope: Namespaced
+  names:
+    plural: finetuningjobs
+    singular: finetuningjob
+    kind: FineTuningJob
+    shortNames:
+      - ftj
+      - ftjob
+

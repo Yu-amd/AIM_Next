@@ -1,0 +1,35 @@
+apiVersion: aim.amd.com/v1alpha1
+kind: FineTuningJob
+metadata:
+  name: qwen-lora-finetune
+  namespace: aim-finetuning
+spec:
+  baseModel:
+    modelId: "Qwen/Qwen2.5-7B-Instruct"
+  method: "lora"
+  dataset:
+    source: "/workspace/templates/example_dataset.jsonl"
+    format: "jsonl"
+  hyperparameters:
+    learningRate: 0.0002
+    batchSize: 4
+    epochs: 3
+    maxSeqLength: 2048
+    warmupSteps: 100
+    gradientCheckpointing: true
+    fp16: true
+  loraConfig:
+    r: 16
+    loraAlpha: 32
+    targetModules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+    loraDropout: 0.05
+  output:
+    profile: "auto-generate"
+  resources:
+    requests:
+      amd.com/gpu: "1"
+      memory: "32Gi"
+    limits:
+      amd.com/gpu: "1"
+      memory: "32Gi"
+
