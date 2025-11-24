@@ -389,23 +389,23 @@ The guardrail microservice acts as a proxy/middleware layer between clients and 
     ┌──────────────────────────────────────────────────────────┐
     │         Guardrail Microservice (Pre-Filter)              │
     ├──────────────────────────────────────────────────────────┤
-    │  ✓ Prompt Injection Detection                          │
-    │  ✓ Toxicity Check                                      │
-    │  ✓ PII Detection                                       │
-    │  ✓ Secrets Scanning                                    │
-    │  ✓ Rate Limiting                                       │
-    │  ✓ Use Case Detection                                  │
+    │  ✓ Prompt Injection Detection                            │
+    │  ✓ Toxicity Check                                        │
+    │  ✓ PII Detection                                         │
+    │  ✓ Secrets Scanning                                      │
+    │  ✓ Rate Limiting                                         │
+    │  ✓ Use Case Detection                                    │
     └──────────┬───────────────────────────────────────────────┘
                │
                │ Forwarded Request (if allowed)
                ▼
     ┌──────────────────────────────────────────────────────────┐
-    │    AMD Inference Microservice (AIM)                     │
+    │    AMD Inference Microservice (AIM)                      │
     │    KServe InferenceService                               │
     ├──────────────────────────────────────────────────────────┤
-    │  • Model Inference                                      │
-    │  • Token Generation                                     │
-    │  • Response Generation                                  │
+    │  • Model Inference                                       │
+    │  • Token Generation                                      │
+    │  • Response Generation                                   │
     └──────────┬───────────────────────────────────────────────┘
                │
                │ Model Response
@@ -413,12 +413,12 @@ The guardrail microservice acts as a proxy/middleware layer between clients and 
     ┌──────────────────────────────────────────────────────────┐
     │         Guardrail Microservice (Post-Filter)             │
     ├──────────────────────────────────────────────────────────┤
-    │  ✓ Toxicity Check                                      │
-    │  ✓ PII Redaction                                       │
-    │  ✓ All-in-One Safety Judge (Llama Guard)               │
-    │  ✓ Policy Compliance                                   │
-    │  ✓ Secrets Scanning (for code)                         │
-    │  ✓ Response Metadata                                   │
+    │  ✓ Toxicity Check                                        │
+    │  ✓ PII Redaction                                         │
+    │  ✓ All-in-One Safety Judge (Llama Guard)                 │
+    │  ✓ Policy Compliance                                     │
+    │  ✓ Secrets Scanning (for code)                           │
+    │  ✓ Response Metadata                                     │
     └──────────┬───────────────────────────────────────────────┘
                │
                │ Guarded Response + Metadata
@@ -430,10 +430,10 @@ The guardrail microservice acts as a proxy/middleware layer between clients and 
 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ Key Features:                                                           │
-│ • Single entry point: Gateway only talks to Guardrail Service          │
-│ • Latency-aware: Model selection based on use case budgets             │
-│ • Comprehensive: 7 filter types with multiple model options          │
-│ • Production-ready: Prometheus metrics, health checks, auto-fallback  │
+│ • Single entry point: Gateway only talks to Guardrail Service           │
+│ • Latency-aware: Model selection based on use case budgets              │
+│ • Comprehensive: 7 filter types with multiple model options             │
+│ • Production-ready: Prometheus metrics, health checks, auto-fallback    │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
