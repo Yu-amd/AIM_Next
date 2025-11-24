@@ -17,14 +17,14 @@ ROCm-based GPU resource sharing and partitioning to enable efficient multi-model
 
 ```
 ┌─────────────────────────────────────────────┐
-│         KServe InferenceService            │
+│         KServe InferenceService             │
 │      (with GPU sharing annotations)         │
 └──────────────────┬──────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────┐
-│      Partition Controller (K8s)              │
+│      Partition Controller (K8s)             │
 │  - Watches InferenceService resources       │
-│  - Manages GPU partition allocation          │
+│  - Manages GPU partition allocation         │
 └──────────────────┬──────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────┐
@@ -41,8 +41,8 @@ ROCm-based GPU resource sharing and partitioning to enable efficient multi-model
 └──────────────────┬──────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────┐
-│         AMD Instinct GPUs                    │
-│      (MI300X, MI350X, etc.)                  │
+│         AMD Instinct GPUs                   │
+│      (MI300X, MI350X, etc.)                 │
 └─────────────────────────────────────────────┘
 ```
 
@@ -78,10 +78,10 @@ aim-gpu-sharing/
 - ✅ ROCm memory partitioning layer
   - **Real hardware mode** (`rocm_partitioner_real.py`) using actual MI300 partition modes
   - Simulation mode (`rocm_partitioner.py`) for development
-  - Based on [AMD MI300 partition modes guide](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/)
+  - Based on [AMD MI300 partition modes guide](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html)
 - ✅ Model scheduler for multi-model deployment
 - ✅ Resource isolator for compute isolation
-- ✅ Model sizing with precision support (FP16, INT8, INT4)
+- ✅ Model sizing with precision support
 - ✅ AIM profile generation (114 profiles)
 - ✅ Comprehensive unit test suite (93+ tests)
 
@@ -105,8 +105,6 @@ aim-gpu-sharing/
 - **KServe Integration**: CRD schema, controller logic, and E2E tests validated
 - **QoS System**: Priority queues, SLO tracking, resource guarantees working
 - **Monitoring**: Metrics exporter structure validated
-
-See [HARDWARE_TEST_STATUS.md](./HARDWARE_TEST_STATUS.md) for detailed hardware test results.
 
 ### Hardware Testing Notes
 
@@ -318,4 +316,4 @@ See the prototype recommendations document for detailed implementation guideline
 
 ## License
 
-MIT License (to be confirmed)
+MIT License
