@@ -54,7 +54,7 @@ AIM_Next/
   - QoS Framework with priority-based scheduling and SLO tracking
   - Grafana Dashboards for partition utilization, model performance, and scheduler metrics
 
-**Try it out:** See the [aim-gpu-sharing README](./aim-gpu-sharing/README.md) for detailed documentation, deployment guides, and validation instructions to test GPU sharing/partitioning on your own hardware.
+See the [aim-gpu-sharing README](./aim-gpu-sharing/README.md) for detailed documentation, deployment guides, and validation instructions to test GPU sharing/partitioning on your own hardware.
 
 ### AIM Guardrails
 - Core Guardrail Service - COMPLETE
@@ -70,7 +70,7 @@ AIM_Next/
   - Deployment manifests
   - ConfigMap-based configuration
 
-**Try it out:** See the [aim-guardrails README](./aim-guardrails/README.md) for detailed documentation, usage examples, and deployment instructions.
+See the [aim-guardrails README](./aim-guardrails/README.md) for detailed documentation, usage examples, and deployment instructions.
 
 ### AIM Fine-Tuning
 - Core Fine-Tuning Service - COMPLETE
@@ -89,7 +89,7 @@ AIM_Next/
   - SSH port forwarding support for remote monitoring
   - Automated validation reports
 
-**Try it out:** See the [aim-finetuning README](./aim-finetuning/README.md) for detailed documentation, usage examples, and testing instructions.
+See the [aim-finetuning README](./aim-finetuning/README.md) for detailed documentation, usage examples, and testing instructions.
 
 ## License
 
