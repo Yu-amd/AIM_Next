@@ -50,7 +50,7 @@ spec:
       nodeSelector:
         accelerator: amd-gpu
       tolerations:
-      - key: nvidia.com/gpu
+      - key: amd.com/gpu
         operator: Exists
         effect: NoSchedule
 

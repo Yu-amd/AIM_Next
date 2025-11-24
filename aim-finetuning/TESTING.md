@@ -6,7 +6,7 @@ This document provides instructions for testing the fine-tuning service, specifi
 
 ### System Requirements
 - Python 3.10 or higher
-- AMD GPU with ROCm support (or NVIDIA GPU with CUDA)
+- AMD GPU with ROCm support ()
 - At least 16GB GPU memory (for 7B models)
 - 20GB+ free disk space (for model downloads and checkpoints)
 
@@ -277,7 +277,7 @@ If you get import errors:
 1. **Check GPU utilization:**
    ```bash
    rocm-smi  # For AMD GPUs
-   nvidia-smi  # For NVIDIA GPUs
+   amd-smi  
    ```
 
 2. **Reduce dataset size** for initial testing
@@ -355,7 +355,7 @@ After successful testing:
 2. **Experiment with hyperparameters** - Tune learning rate, LoRA rank, etc.
 3. **Compare methods** - Test LoRA vs QLoRA vs Full fine-tuning
 4. **Use AIM profiles** - Use generated profiles for deployment planning
-5. **Test on GPU** - Run tests with ROCm/CUDA for better performance
+5. **Test on GPU** - Run tests with ROCm for better performance
 
 ## Performance Benchmarks
 

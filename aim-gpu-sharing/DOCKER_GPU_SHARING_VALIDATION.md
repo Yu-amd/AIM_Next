@@ -239,7 +239,7 @@ docker run ... --device=/dev/kfd --device=/dev/dri ...
 
 **Error:**
 ```
-CUDA out of memory
+GPU out of memory
 ```
 
 **Solution:**

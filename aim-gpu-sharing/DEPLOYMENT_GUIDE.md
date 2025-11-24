@@ -27,7 +27,7 @@ kubectl cluster-info
 python3 --version
 
 # Check GPU
-amd-smi  # or nvidia-smi for NVIDIA GPUs
+amd-smi  
 ```
 
 ### Install Python Dependencies

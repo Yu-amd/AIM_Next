@@ -62,17 +62,17 @@ AIM_Next/
 - Advanced Features
 
 ### AIM Fine-Tuning
-- **Phase 1: Core Fine-Tuning Service** - ✅ COMPLETE
+- Core Fine-Tuning Service - COMPLETE
   - LoRA, QLoRA, and Full fine-tuning implementations
   - Dataset loading and preprocessing (JSONL, CSV, HuggingFace)
   - AIM profile generation for fine-tuned models
   - Training orchestration and CLI
-- **Phase 2: Job Management** - ✅ COMPLETE
+- Job Management - COMPLETE
   - KServe CRD for FineTuningJob
   - Kubernetes controller for job lifecycle
   - Checkpoint management with storage backends
   - Job status tracking and management
-- **Phase 3: Monitoring & Validation** - ✅ COMPLETE
+- Monitoring & Validation - COMPLETE
   - Prometheus metrics export (real-time training metrics, GPU utilization)
   - Validation framework (training loss, model output, checkpoint integrity)
   - SSH port forwarding support for remote monitoring

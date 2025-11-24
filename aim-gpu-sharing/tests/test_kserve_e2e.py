@@ -89,9 +89,9 @@ spec:
       storageUri: gs://kfserving-examples/models/sklearn/iris
       resources:
         requests:
-          nvidia.com/gpu: "1"
+          amd.com/gpu: "1"
         limits:
-          nvidia.com/gpu: "1"
+          amd.com/gpu: "1"
 """
     
     try:

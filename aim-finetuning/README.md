@@ -35,7 +35,7 @@ The AIM Fine-Tuning Microservice provides a complete solution for fine-tuning la
 ### Prerequisites
 
 - Python 3.10+
-- PyTorch with ROCm support (for AMD GPUs) or CUDA (for NVIDIA GPUs)
+- PyTorch with ROCm support (for AMD GPUs) 
 - GPU with sufficient memory (16GB+ recommended for 7B models)
 - HuggingFace account (for gated models)
 
@@ -367,7 +367,7 @@ Note: Times vary based on sequence length, batch size, and other hyperparameters
 ### Common Issues
 
 - **`ModuleNotFoundError`**: Install dependencies from `requirements.txt`
-- **`CUDA out of memory`**: Reduce batch size or use QLoRA method
+- **`GPU out of memory`**: Reduce batch size or use QLoRA method
 - **`Metrics server port in use`**: Use `--metrics-port` to specify different port
 - **`Dataset format error`**: Ensure dataset matches expected format (see Dataset Format section)
 

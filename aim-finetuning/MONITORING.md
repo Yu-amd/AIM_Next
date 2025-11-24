@@ -412,5 +412,5 @@ The `prometheus-client` package is included in `requirements.txt`.
 
 - **Metrics not available**: Ensure `prometheus-client` is installed and metrics server is running
 - **Validation fails**: Check that all required files exist and are readable
-- **GPU metrics unavailable**: GPU metrics require `amd-smi` or `nvidia-smi` to be available
+- **GPU metrics unavailable**: GPU metrics require `amd-smi` to be available
 

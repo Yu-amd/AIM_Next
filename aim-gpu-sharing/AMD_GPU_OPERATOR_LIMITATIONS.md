@@ -23,9 +23,9 @@ When removing `amd.com/gpu` request from second pod:
 
 This suggests the AMD GPU operator manages device access through resource allocation.
 
-### 3. Comparison with NVIDIA GPU Operator
+### 3. Comparison with other GPU operators
 
-**NVIDIA GPU Operator** supports:
+**other GPU operators** supports:
 - **Time-slicing**: Multiple pods can share a GPU with time-slicing
 - **MIG**: Multi-Instance GPU for hardware partitioning
 - **Configuration**: Via `DeviceClass` CRD

@@ -617,7 +617,7 @@ Extend AIM profile to support all features:
 ## Appendix A: Reference Implementations
 
 ### GPU Sharing
-- NVIDIA MIG (Multi-Instance GPU) - reference architecture
+- Reference architectures for GPU partitioning
 - AMD GPU Partitioning documentation
 - vLLM multi-model serving examples
 
