@@ -72,6 +72,8 @@ For comprehensive testing documentation, see component-specific testing guides.
   - QoS Framework with priority-based scheduling and SLO tracking
   - Grafana Dashboards for partition utilization, model performance, and scheduler metrics
 
+**Try it out:** See the [aim-gpu-sharing README](./aim-gpu-sharing/README.md) for detailed documentation, deployment guides, and validation instructions to test GPU sharing/partitioning on your own hardware.
+
 ### AIM Guardrails
 - [ ] Phase 1: Core Guardrail Service (Weeks 1-3)
 - [ ] Phase 2: Deployment Patterns (Weeks 4-5)
