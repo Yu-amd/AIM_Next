@@ -37,37 +37,19 @@ AIM_Next/
    pip install -r requirements.txt
    ```
 
-3. Review the [prototype recommendations document](./AIM_next_prototype_recommendations.md) for detailed architecture and implementation guidance
-
-### Running Tests
-
-Each component includes unit tests. Run tests to verify your setup:
-
-```bash
-# GPU Sharing tests
-cd aim-gpu-sharing
-python3 tests/run_tests.py  # Quick validation
-pytest tests/ -v            # Full test suite
-
-# See component-specific testing docs:
-# - aim-gpu-sharing/TESTING.md
-```
-
-For comprehensive testing documentation, see component-specific testing guides.
-
 ## Feature Status
 
 ### GPU Sharing/Partitioning
-- [x] Phase 1: Foundation (Weeks 1-2) - **✅ COMPLETE**
+- Foundation - COMPLETE
   - Real ROCm partitioner working on MI300X hardware
   - Model scheduler, resource isolator, hardware detector
   - 114 AIM profiles with partition mode information
   - 77 tests passing on real hardware
-- [x] Phase 2: Integration (Weeks 3-4) - **✅ COMPLETE**
+- Integration - COMPLETE
   - KServe CRD Extension with GPU sharing annotations
   - Kubernetes Partition Controller for automatic partition allocation
   - GPU Sharing Operator with RBAC and deployment manifests
-- [x] Phase 3: QoS & Monitoring (Weeks 5-6) - **✅ COMPLETE**
+- QoS & Monitoring - COMPLETE
   - Metrics Exporter (Prometheus) with partition and model metrics
   - QoS Framework with priority-based scheduling and SLO tracking
   - Grafana Dashboards for partition utilization, model performance, and scheduler metrics
@@ -75,21 +57,15 @@ For comprehensive testing documentation, see component-specific testing guides.
 **Try it out:** See the [aim-gpu-sharing README](./aim-gpu-sharing/README.md) for detailed documentation, deployment guides, and validation instructions to test GPU sharing/partitioning on your own hardware.
 
 ### AIM Guardrails
-- [ ] Phase 1: Core Guardrail Service (Weeks 1-3)
-- [ ] Phase 2: Deployment Patterns (Weeks 4-5)
-- [ ] Phase 3: Advanced Features (Weeks 6-8)
+- Core Guardrail Service
+- Deployment Patterns
+- Advanced Features
 
 ### AIM Fine-Tuning
-- [ ] Phase 1: Core Fine-Tuning Service (Weeks 1-4)
-- [ ] Phase 2: Job Management (Weeks 5-6)
-- [ ] Phase 3: Advanced Features (Weeks 7-10)
-
-## Contributing
-
-See the prototype recommendations document for detailed implementation guidelines for each feature.
+- Core Fine-Tuning Service (Weeks 1-4)
+- Job Management (Weeks 5-6)
+- Advanced Features (Weeks 7-10)
 
 ## License
 
-MIT License (to be confirmed)
-
-
+MIT License
