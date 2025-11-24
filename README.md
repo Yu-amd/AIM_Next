@@ -22,10 +22,10 @@ AIM_Next/
 ### Prerequisites
 
 - Kubernetes cluster with KServe installed
-- ROCm 6.x installed on GPU nodes
+- ROCm 7.* installed on GPU nodes
 - Docker/containerd for container runtime
 - Python 3.10+
-- Access to AMD Instinct GPUs (MI300X, MI350X, etc.)
+- Access to AMD Instinct GPUs (MI300X, MI325X, etc.)
 
 ### Development Setup
 
