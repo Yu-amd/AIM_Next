@@ -1,0 +1,72 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: aim-guardrail-service
+  namespace: aim-guardrails
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
+spec:
+  predictor:
+    containers:
+      - name: kserve-container
+        image: aim-guardrails:latest
+        command: ["python3", "-m", "guardrails.api.server"]
+        env:
+          - name: PORT
+            value: "8080"
+          - name: ENABLE_METRICS
+            value: "true"
+          - name: GUARDRAIL_CONFIG_YAML
+            value: "/etc/guardrails/config.yaml"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        ports:
+          - containerPort: 8080
+            name: http
+          - containerPort: 9090
+            name: metrics
+        volumeMounts:
+          - name: guardrail-config
+            mountPath: /etc/guardrails
+            readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 40
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+    volumes:
+      - name: guardrail-config
+        configMap:
+          name: guardrail-policy-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aim-guardrail-service
+  namespace: aim-guardrails
+spec:
+  selector:
+    app: aim-guardrail-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      name: http
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: metrics
+

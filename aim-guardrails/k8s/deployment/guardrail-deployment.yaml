@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aim-guardrail-service
+  namespace: aim-guardrails
+  labels:
+    app: aim-guardrail-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aim-guardrail-service
+  template:
+    metadata:
+      labels:
+        app: aim-guardrail-service
+    spec:
+      containers:
+        - name: guardrail-service
+          image: aim-guardrails:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9090
+              name: metrics
+          env:
+            - name: PORT
+              value: "8080"
+            - name: GUARDRAIL_CONFIG
+              value: "/etc/guardrails/policy.json"
+            - name: ENABLE_METRICS
+              value: "true"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          volumeMounts:
+            - name: guardrail-config
+              mountPath: /etc/guardrails
+              readOnly: true
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: guardrail-config
+          configMap:
+            name: guardrail-policy-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aim-guardrail-service
+  namespace: aim-guardrails
+  labels:
+    app: aim-guardrail-service
+spec:
+  selector:
+    app: aim-guardrail-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      name: http
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: metrics
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guardrail-policy-config
+  namespace: aim-guardrails
+data:
+  policy.json: |
+    {
+      "policies": [
+        {
+          "type": "toxicity",
+          "enabled": true,
+          "action": "block",
+          "threshold": 0.7
+        },
+        {
+          "type": "pii",
+          "enabled": true,
+          "action": "redact",
+          "threshold": 0.8
+        },
+        {
+          "type": "prompt_injection",
+          "enabled": true,
+          "action": "block",
+          "threshold": 0.75
+        }
+      ]
+    }
+

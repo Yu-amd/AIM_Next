@@ -1,0 +1,76 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: guardrailpolicies.aim.amd.com
+spec:
+  group: aim.amd.com
+  names:
+    kind: GuardrailPolicy
+    plural: guardrailpolicies
+    singular: guardrailpolicy
+    shortNames: ["grp"]
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              properties:
+                guardrails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: ["toxicity", "pii", "prompt_injection", "custom"]
+                      enabled:
+                        type: boolean
+                        default: true
+                      action:
+                        type: string
+                        enum: ["block", "warn", "redact", "modify"]
+                        default: "block"
+                      threshold:
+                        type: number
+                        format: float
+                        default: 0.7
+                        minimum: 0.0
+                        maximum: 1.0
+                      customRules:
+                        type: object
+                        additionalProperties: true
+                inferenceEndpoint:
+                  type: string
+                  description: "Optional inference endpoint to protect"
+                mode:
+                  type: string
+                  enum: ["sidecar", "proxy", "standalone"]
+                  default: "sidecar"
+              required: ["guardrails"]
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                  enum: ["Pending", "Active", "Failed"]
+                  default: "Pending"
+                message:
+                  type: string
+                lastUpdated:
+                  type: string
+                  format: date-time
+          subresources:
+            status: {}
+

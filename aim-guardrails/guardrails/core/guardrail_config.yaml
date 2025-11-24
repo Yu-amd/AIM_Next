@@ -1,0 +1,61 @@
+# Guardrail Configuration
+# Defines which models to use for each guardrail type
+
+guardrails:
+  toxicity:
+    model: roberta_toxicity  # Options: roberta_toxicity, detoxify, xlm_toxicity
+    fallback: detoxify
+    pre_filter: true
+    post_filter: true
+    threshold: 0.7
+    
+  pii:
+    model: piiranha  # Options: piiranha, presidio, ab_ai_pii, phi3_pii
+    fallback: presidio
+    pre_filter: true  # Check input for disallowed PII
+    post_filter: true  # Redact PII in output
+    threshold: 0.8
+    
+  prompt_injection:
+    model: protectai_deberta  # Options: protectai_deberta, enhanced_pattern
+    fallback: enhanced_pattern
+    pre_filter: true  # Only check input
+    post_filter: false
+    threshold: 0.75
+    
+  policy_compliance:
+    model: policy_llm  # Options: policy_llm
+    pre_filter: false
+    post_filter: true  # Check output against policies
+    threshold: 0.7
+    model_name: "Qwen/Qwen2.5-3B-Instruct"  # Small LLM for policy judgment
+    
+  secrets:
+    model: secret_scanner  # Pattern-based secret scanning
+    pre_filter: true
+    post_filter: true  # Especially for code models
+    threshold: 0.7
+    
+  all_in_one_judge:
+    model: llama_guard  # Options: llama_guard, granite_guardian
+    model_name: "meta-llama/LlamaGuard-3-8B"
+    pre_filter: true
+    post_filter: true
+    optional: true  # Can be used alongside specific checkers
+    threshold: 0.7
+
+# Traffic-level guardrails
+traffic:
+  rate_limits:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    requests_per_day: 10000
+  context_limits:
+    max_context_length: 8192
+    max_upload_size_mb: 10
+  access_control:
+    allowed_geos: []  # Empty = allow all
+    business_hours_only: false
+    business_hours_start: 9
+    business_hours_end: 17
+

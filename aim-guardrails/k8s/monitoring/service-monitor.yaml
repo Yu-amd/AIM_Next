@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: guardrail-metrics
+  namespace: aim-guardrails
+  labels:
+    app: aim-guardrail-service
+spec:
+  selector:
+    matchLabels:
+      app: aim-guardrail-service
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+

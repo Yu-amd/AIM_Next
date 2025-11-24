@@ -57,9 +57,20 @@ AIM_Next/
 **Try it out:** See the [aim-gpu-sharing README](./aim-gpu-sharing/README.md) for detailed documentation, deployment guides, and validation instructions to test GPU sharing/partitioning on your own hardware.
 
 ### AIM Guardrails
-- Core Guardrail Service
-- Deployment Patterns
-- Advanced Features
+- **Core Guardrail Service** - ✅ COMPLETE
+  - Multiple guardrail types (toxicity, PII, prompt injection)
+  - Policy management system
+  - Configurable actions (block, warn, redact, modify)
+- **API & Integration** - ✅ COMPLETE
+  - REST API server for guardrail checking
+  - Inference proxy for endpoint integration
+  - Sidecar deployment pattern
+- **Kubernetes Integration** - ✅ COMPLETE
+  - GuardrailPolicy CRD
+  - Deployment manifests
+  - ConfigMap-based configuration
+
+**Try it out:** See the [aim-guardrails README](./aim-guardrails/README.md) for detailed documentation, usage examples, and deployment instructions.
 
 ### AIM Fine-Tuning
 - Core Fine-Tuning Service - COMPLETE
