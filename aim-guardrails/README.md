@@ -367,28 +367,74 @@ python3 examples/example_usage.py
 The guardrail microservice acts as a proxy/middleware layer between clients and the AIM inference service. This architecture ensures all requests and responses are checked before reaching clients.
 
 ```
-[ Client / App / Portal ]
-            |
-            v
-   [ API Gateway / Ingress ]
-      (Istio, NGINX, etc.)
-            |
-            v
-   [ Guardrail Microservice ]
-   - Pre-filters on prompt
-   - Orchestrates guardrail models
-   - Calls AIM
-            |
-            v
-[ AMD Inference Microservice (AIM) ]
-     (KServe InferenceService)
-            |
-            v
-   [ Guardrail Microservice ]
-     Post-filters on response
-            |
-            v
-[ Client / App / Portal ]
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         AIM Guardrail Architecture                      │
+└─────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────────────┐
+    │  Client / App /      │
+    │  Portal              │
+    └──────────┬───────────┘
+               │
+               │ HTTP Request
+               ▼
+    ┌──────────────────────┐
+    │  API Gateway /       │
+    │  Ingress             │
+    │  (Istio, NGINX, etc.)│
+    └──────────┬───────────┘
+               │
+               │ Routes to Guardrail Service
+               ▼
+    ┌──────────────────────────────────────────────────────────┐
+    │         Guardrail Microservice (Pre-Filter)              │
+    ├──────────────────────────────────────────────────────────┤
+    │  ✓ Prompt Injection Detection                          │
+    │  ✓ Toxicity Check                                      │
+    │  ✓ PII Detection                                       │
+    │  ✓ Secrets Scanning                                    │
+    │  ✓ Rate Limiting                                       │
+    │  ✓ Use Case Detection                                  │
+    └──────────┬───────────────────────────────────────────────┘
+               │
+               │ Forwarded Request (if allowed)
+               ▼
+    ┌──────────────────────────────────────────────────────────┐
+    │    AMD Inference Microservice (AIM)                     │
+    │    KServe InferenceService                               │
+    ├──────────────────────────────────────────────────────────┤
+    │  • Model Inference                                      │
+    │  • Token Generation                                     │
+    │  • Response Generation                                  │
+    └──────────┬───────────────────────────────────────────────┘
+               │
+               │ Model Response
+               ▼
+    ┌──────────────────────────────────────────────────────────┐
+    │         Guardrail Microservice (Post-Filter)             │
+    ├──────────────────────────────────────────────────────────┤
+    │  ✓ Toxicity Check                                      │
+    │  ✓ PII Redaction                                       │
+    │  ✓ All-in-One Safety Judge (Llama Guard)               │
+    │  ✓ Policy Compliance                                   │
+    │  ✓ Secrets Scanning (for code)                         │
+    │  ✓ Response Metadata                                   │
+    └──────────┬───────────────────────────────────────────────┘
+               │
+               │ Guarded Response + Metadata
+               ▼
+    ┌──────────────────────┐
+    │  Client / App /      │
+    │  Portal              │
+    └──────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Key Features:                                                           │
+│ • Single entry point: Gateway only talks to Guardrail Service          │
+│ • Latency-aware: Model selection based on use case budgets             │
+│ • Comprehensive: 7 filter types with multiple model options          │
+│ • Production-ready: Prometheus metrics, health checks, auto-fallback  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 **Key Points:**
